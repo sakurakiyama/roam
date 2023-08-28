@@ -2,7 +2,7 @@
  * **************************************************
  *
  * @description
- * This component renders the draggable flight card.
+ * This component renders the draggable hotel card.
  *
  * **************************************************
  */
@@ -29,14 +29,9 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
   return (
     <div
       ref={drag}
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-        fontSize: 25,
-        fontWeight: 'bold',
-        cursor: 'move',
-        background: 'yellow',
-        margin: '5px',
-      }}
+      className={`p-2 ${
+        isDragging ? 'opacity-50' : 'opacity-100'
+      } text-xl font-bold cursor-move bg-yellow-300 m-2 flex items-center`}
     >
       {name}
     </div>

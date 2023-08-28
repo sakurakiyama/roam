@@ -5,13 +5,14 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import Cards from '../components/cards/Cards';
+import CardLabels from '../components/labels/CardLabels';
 
 function Home(): JSX.Element {
   const { user } = useAuth0();
 
   useEffect(() => {
     if (user) {
+      console.log(user);
       // eslint-disable-next-line no-inner-declarations
       async function getUser() {
         try {
@@ -44,7 +45,7 @@ function Home(): JSX.Element {
         {/* Itinerary with Cards */}
         <div className='flex mx-10 my-10 space-x-4 '>
           <div className='w-[20%]'>
-            <Cards />
+            <CardLabels />
           </div>
           <div className='w-[80%]'>
             <Itinerary />

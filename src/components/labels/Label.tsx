@@ -2,26 +2,22 @@
  * **************************************************
  *
  * @description
- * This component renders the draggable restaurant card.
+ * This component renders each label
  *
  * **************************************************
  */
 
 import { useDrag } from 'react-dnd';
+import { CardLabelTypes } from '../../types';
 
 const CardType = {
   Card: 'Card',
 };
 
-interface RestaurantCardProps {
-  name: string;
-  id: null | string;
-}
-
-function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
+function CardLabels({ name, icon }: CardLabelTypes): JSX.Element {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: CardType.Card,
-    item: { name, id },
+    item: { name },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -32,11 +28,12 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
       ref={drag}
       className={`p-2 ${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move bg-pink-300 m-2 flex items-center`}
+      } text-xl font-bold cursor-move bg-stone-300 m-2 flex items-center`}
     >
-      {name}
+      <div className='mr-2'>{icon}</div>
+      <div>{name}</div>
     </div>
   );
 }
 
-export default RestaurantCard;
+export default CardLabels;

@@ -54,7 +54,6 @@ function Itinerary(): JSX.Element {
 
   return (
     <div className='border-solid border-2 h-[500px]' ref={drop}>
-      {/* <div className='bg-blue-200 h-[50%]' ref={drop}></div> */}
       <div>
         {cards.map((card) => {
           return <div key={card.props.id}>{card}</div>;
