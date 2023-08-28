@@ -7,7 +7,6 @@ import userController from '../controllers/userController/index.js';
 const router = Router();
 
 router.get('/getUser/:email', userController.getUser, (req, res) => {
-  console.log(res.locals.user);
   return res.status(200).json(res.locals.user);
 });
 

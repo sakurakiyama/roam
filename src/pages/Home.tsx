@@ -1,7 +1,11 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Nav from '../components/shared/Nav';
+import Itinerary from '../components/Itinerary';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import Cards from '../components/cards/Cards';
 
 function Home(): JSX.Element {
   const { user } = useAuth0();
@@ -33,9 +37,21 @@ function Home(): JSX.Element {
     }
   }, [user]);
   return (
-    <div>
-      <Nav />
-    </div>
+    <DndProvider backend={HTML5Backend}>
+      {/* Navigation Bar */}
+      <div>
+        <Nav />
+        {/* Itinerary with Cards */}
+        <div className='flex mx-10 my-10 space-x-4 '>
+          <div className='w-[20%]'>
+            <Cards />
+          </div>
+          <div className='w-[80%]'>
+            <Itinerary />
+          </div>
+        </div>
+      </div>
+    </DndProvider>
   );
 }
 
