@@ -28,7 +28,7 @@ function CardLabels({ name, icon }: CardLabelTypes): JSX.Element {
       ref={drag}
       className={`p-2 ${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move bg-stone-300 m-2 flex items-center`}
+      } text-xl font-bold cursor-move bg-stone-200 shadow-sm m-2 flex items-center`}
     >
       <div className='mr-2'>{icon}</div>
       <div>{name}</div>

@@ -7,6 +7,7 @@
  *
  * **************************************************
  */
+
 import { useDrop } from 'react-dnd';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +25,7 @@ function Itinerary(): JSX.Element {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: CardType.Card,
-      drop: (item: JSX.Element) => {
+      drop: (item: { name: string }) => {
         const newId = uuidv4();
         let newCard: JSX.Element;
         switch (item.name) {
@@ -53,7 +54,7 @@ function Itinerary(): JSX.Element {
   );
 
   return (
-    <div className='border-solid border-2 h-[500px]' ref={drop}>
+    <div className='border-solid border-2 h-full' ref={drop}>
       <div>
         {cards.map((card) => {
           return <div key={card.props.id}>{card}</div>;

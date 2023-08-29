@@ -32,7 +32,7 @@ function Nav(): JSX.Element {
   }
 
   return (
-    <div className='flex w-full py-5 px-5 bg-stone-100 drop-shadow-sm'>
+    <div className='flex w-full py-5 px-5'>
       {/* Left Nav */}
       <div className=''>
         <img className='h-auto w-auto max-h-10' src={Logo}></img>

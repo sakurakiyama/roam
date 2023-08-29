@@ -21,7 +21,7 @@ function CardLabels(): JSX.Element {
   ];
 
   return (
-    <div className='border-solid border-2'>
+    <div className='border-solid border-2 '>
       {cards.map((card) => {
         return <Label name={card.name} icon={card.icon} />;
       })}

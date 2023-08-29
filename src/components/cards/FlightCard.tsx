@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -7,11 +6,12 @@
  *
  * **************************************************
  */
+
 import { useDrag } from 'react-dnd';
 import { useState } from 'react';
-import { DatePicker, Form, Input, Button } from 'antd';
+import { Collapse, Form, Input, Button } from 'antd';
 import axios from 'axios';
-import { Moment } from 'moment';
+import { convertTo12HourFormat } from '../../utils/convertTime';
 
 const CardType = {
   Card: 'Card',
@@ -30,8 +30,21 @@ interface FormValues {
   seat: string;
 }
 
+interface CardData {
+  flightNumber: string;
+  confirmationNumber: string;
+  notes: string;
+  seat: string;
+  departureAirport: string;
+  departureTime: string;
+  departureGate: string;
+  arrivalTime: string;
+  arrivalGate: string;
+  arrivalAirport: string;
+}
+
 function FlightCard({ name, id }: FlightCardProps): JSX.Element {
-  const [cardData, setCardData] = useState([]);
+  const [cardData, setCardData] = useState<CardData | undefined>(undefined);
   const [form] = Form.useForm();
   const API_KEY = import.meta.env.VITE_ACCESS_KEY;
 
@@ -47,7 +60,20 @@ function FlightCard({ name, id }: FlightCardProps): JSX.Element {
       const { data } = await axios.get(
         `https://aviation-edge.com/v2/public/timetable?iataCode=${departureAirport}&type=departure&flight_iata=${flightNumber}&key=${API_KEY}`
       );
-      console.log(data);
+      // TODO: Add logic for if the flight is not found.
+      const info = {
+        flightNumber: flightNumber,
+        confirmationNumber: confirmationNumber,
+        notes: notes,
+        seat: seat,
+        departureAirport: departureAirport,
+        departureTime: convertTo12HourFormat(data[0].departure.scheduledTime),
+        departureGate: data[0].departure.gate,
+        arrivalTime: convertTo12HourFormat(data[0].arrival.scheduledTime),
+        arrivalGate: data[0].arrival.gate,
+        arrivalAirport: data[0].arrival.iataCode,
+      };
+      setCardData(info);
     } catch (error) {
       console.log(error);
     }
@@ -61,42 +87,137 @@ function FlightCard({ name, id }: FlightCardProps): JSX.Element {
     }),
   }));
 
+  const formItems = [
+    {
+      label: 'Departure Airport',
+      name: 'departureAirport',
+      placeholder: 'e.g: JFK',
+      required: true,
+    },
+    {
+      label: 'Flight Number',
+      name: 'flightNumber',
+      placeholder: 'e.g: DL230',
+      required: true,
+    },
+    {
+      label: 'Confirmation Number',
+      name: 'confirmationNumber',
+      placeholder: 'e.g: MH6LM',
+    },
+    { label: 'Seats', name: 'seat', placeholder: 'e.g: 12B' },
+    { label: 'Notes', name: 'notes' },
+  ];
+
   return (
     <div
       ref={drag}
       key={id}
       className={`p-2 ${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move bg-green-100 m-2 flex items-center`}
+      } text-xl font-bold cursor-move m-2 flex items-center`}
     >
-      <Form form={form} onFinish={handleFormSubmit}>
-        <Form.Item
-          label='Departure Airport'
-          name='departureAirport'
-          rules={[{ required: true, message: 'Please enter the airport code' }]}
-        >
-          <Input placeholder='e.g: JFK' />
-        </Form.Item>
-        <Form.Item
-          label='Flight Number'
-          name='flightNumber'
-          rules={[{ required: true, message: 'Please enter a flight number' }]}
-        >
-          <Input placeholder='e.g: DL230' />
-        </Form.Item>
-        <Form.Item label='Confirmation Number' name='confirmationNumber'>
-          <Input placeholder='e.g: MH6LM' />
-        </Form.Item>
-        <Form.Item label='Seats' name='seat'>
-          <Input placeholder='e.g: 12B' />
-        </Form.Item>
-        <Form.Item label='Notes' name='notes'>
-          <Input />
-        </Form.Item>
-        <Button type='primary' htmlType='submit'>
-          Submit
-        </Button>
-      </Form>
+      {cardData ? (
+        <Collapse
+          collapsible='icon'
+          className='w-full'
+          defaultActiveKey={['1']}
+          items={[
+            {
+              key: '1',
+              label: (
+                <div>
+                  <div className='flex pb-5'>
+                    {cardData.departureTime}
+                    <div className='pl-5'>
+                      Depart {cardData.departureAirport} for{' '}
+                      {cardData.arrivalAirport} on {cardData.flightNumber}
+                      <ul>
+                        Confirmation Number: {cardData.confirmationNumber}
+                      </ul>
+                      <ul>Departure Gate: {cardData.departureGate}</ul>
+                      <ul>Seats: {cardData.seat}</ul>
+                      <ul>Notes: {cardData.notes}</ul>
+                    </div>
+                  </div>
+                  <div className='flex'>
+                    <div>{cardData.arrivalTime}</div>
+                    <div className='pl-5'>
+                      Arrive at {cardData.arrivalAirport}
+                    </div>
+                  </div>
+                </div>
+              ),
+              children: (
+                <Form form={form} onFinish={handleFormSubmit}>
+                  <Form.Item
+                    label='Departure Airport'
+                    name='departureAirport'
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please enter the airport code',
+                      },
+                    ]}
+                  >
+                    <Input placeholder={cardData.departureAirport} />
+                  </Form.Item>
+                  <Form.Item
+                    label='Flight Number'
+                    name='flightNumber'
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please enter a flight number',
+                      },
+                    ]}
+                  >
+                    <Input placeholder={cardData.flightNumber} />
+                  </Form.Item>
+                  <Form.Item
+                    label='Confirmation Number'
+                    name='confirmationNumber'
+                  >
+                    <Input placeholder={cardData.confirmationNumber} />
+                  </Form.Item>
+                  <Form.Item label='Seats' name='seat'>
+                    <Input placeholder={cardData.seat} />
+                  </Form.Item>
+                  <Form.Item label='Notes' name='notes'>
+                    <Input placeholder={cardData.notes} />
+                  </Form.Item>
+                  <Button htmlType='submit'>Submit</Button>
+                </Form>
+              ),
+            },
+          ]}
+        />
+      ) : (
+        <div className='border rounded-md w-full p-4'>
+          <Form form={form} onFinish={handleFormSubmit}>
+            {formItems.map((item) => (
+              <Form.Item
+                key={item.name}
+                label={item.label}
+                name={item.name}
+                rules={
+                  item.required
+                    ? [
+                        {
+                          required: true,
+                          message: `Please enter ${item.label.toLowerCase()}`,
+                        },
+                      ]
+                    : undefined
+                }
+              >
+                <Input placeholder={item.placeholder} />
+              </Form.Item>
+            ))}
+            <Button htmlType='submit'>Submit</Button>
+          </Form>
+        </div>
+      )}
     </div>
   );
 }
