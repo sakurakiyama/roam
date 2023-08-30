@@ -8,13 +8,13 @@
  */
 
 /*
-TODO: Add dropdown for booking type 
-TODO: Add dropdown for type of meal (lunch, dinner, drinks etc)
+TODO: [X] Add dropdown for type of meal (lunch, dinner, drinks etc)
 */
 
 import { useDrag } from 'react-dnd';
-import { Collapse, Form, Input, Button } from 'antd';
+import { Collapse, Form, Input, Button, Checkbox } from 'antd';
 import { useState } from 'react';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 
 const CardType = {
   Card: 'Card',
@@ -31,6 +31,7 @@ interface CardData {
   restaurantPhone: string;
   notes: string;
   arrivalTime: string;
+  selectedValue: CheckboxValueType;
 }
 
 interface FormValues {
@@ -43,6 +44,14 @@ interface FormValues {
 
 function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
   const [cardData, setCardData] = useState<CardData | undefined>(undefined);
+  const [selected, setSelected] = useState<CheckboxValueType>(false);
+  const [options, setOptions] = useState([
+    { label: 'Dinner', value: 'Dinner' },
+    { label: 'Lunch', value: 'Lunch' },
+    { label: 'Breakfast', value: 'Breakfast' },
+    { label: 'Drinks', value: 'Drinks' },
+  ]);
+
   const [form] = Form.useForm();
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -69,11 +78,30 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
         restaurantPhone,
         notes,
         arrivalTime,
+        selectedValue: selected,
       });
     } catch (error) {
       console.log(error);
     }
   }
+
+  const onChange = (checkedValue: CheckboxValueType[]) => {
+    const selectedValue = checkedValue[0] as string;
+    let updatedOptions;
+    if (selectedValue === undefined) {
+      updatedOptions = options.map((option) => ({
+        ...option,
+        disabled: false,
+      }));
+    } else {
+      updatedOptions = options.map((option) => ({
+        ...option,
+        disabled: option.value !== selectedValue,
+      }));
+    }
+    setSelected(selectedValue);
+    setOptions(updatedOptions);
+  };
 
   const formItems = [
     {
@@ -122,7 +150,7 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
                   <div className='flex pb-5'>
                     {cardData.arrivalTime}
                     <div className='pl-5'>
-                      Dinner at {cardData.restaurantName}
+                      {cardData.selectedValue} at {cardData.restaurantName}
                       <ul>
                         {cardData.restaurantAddress
                           ? `Address: ${cardData.restaurantAddress}`
@@ -146,7 +174,7 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
               children: (
                 <Form form={form} onFinish={handleFormSubmit}>
                   <Form.Item
-                    label='restaurant Name'
+                    label='Restaurant Name'
                     name='restaurantName'
                     rules={[
                       {
@@ -190,6 +218,22 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
                   <Form.Item label='Notes' name='notes'>
                     <Input placeholder={cardData.notes} />
                   </Form.Item>
+                  <Form.Item
+                    label='Type'
+                    name='selectedOptions'
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please select at one option',
+                      },
+                    ]}
+                  >
+                    <Checkbox.Group
+                      options={options}
+                      defaultValue={[cardData.selectedValue]}
+                      onChange={onChange}
+                    />
+                  </Form.Item>
                   <Button htmlType='submit'>Submit</Button>
                 </Form>
               ),
@@ -218,6 +262,19 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
                 <Input placeholder={item.placeholder} />
               </Form.Item>
             ))}
+            <Form.Item
+              label='Type'
+              name='selectedOptions'
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select at one option',
+                },
+              ]}
+            >
+              <Checkbox.Group options={options} onChange={onChange} />
+            </Form.Item>
+
             <Button htmlType='submit'>Submit</Button>
           </Form>
         </div>
