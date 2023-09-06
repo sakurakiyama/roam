@@ -12,7 +12,6 @@ function Home(): JSX.Element {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       // eslint-disable-next-line no-inner-declarations
       async function getUser() {
         try {

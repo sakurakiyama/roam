@@ -135,7 +135,7 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
       ref={drag}
       className={`p-2 ${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move m-2 flex items-center`}
+      } text-xl font-bold cursor-move m-2 flex items-center bg-red-100`}
     >
       {cardData ? (
         <Collapse

@@ -11,9 +11,8 @@
 import { useDrop } from 'react-dnd';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import FlightCard from './cards/FlightCard';
-import HotelCard from './cards/HotelCard';
-import RestaurantCard from './cards/RestaurantCard';
+import Placeholder from './cards/Placeholder';
+import { createNewCards } from '../utils/cardUtils';
 
 const CardType = {
   Card: 'Card',
@@ -25,25 +24,17 @@ function Itinerary(): JSX.Element {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: CardType.Card,
-      drop: (item: { name: string }) => {
-        const newId = uuidv4();
-        let newCard: JSX.Element;
-        switch (item.name) {
-          case 'Flight Card':
-            newCard = <FlightCard name='Flight Card' id={newId} />;
-            break;
-          case 'Hotel Card':
-            newCard = <HotelCard name='Hotel Card' id={newId} />;
-            break;
-          case 'Restaurant Card':
-            newCard = <RestaurantCard name='Restaurant Card' id={newId} />;
-            break;
-          default:
-            break;
-        }
-
+      drop: (item: { name: string; id: string }) => {
         setCards((prevState) => {
-          return [...prevState, newCard];
+          if (prevState.length === 0) {
+            const newCard: JSX.Element = createNewCards(item);
+            return [
+              <Placeholder setCards={setCards} id={uuidv4()} />,
+              newCard,
+              <Placeholder setCards={setCards} id={uuidv4()} />,
+            ];
+          }
+          return prevState;
         });
       },
       collect: (monitor) => ({

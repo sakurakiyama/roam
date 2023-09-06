@@ -11,7 +11,7 @@ import { useDrag } from 'react-dnd';
 import { useState } from 'react';
 import { Collapse, Form, Input, Button } from 'antd';
 import axios from 'axios';
-import { convertTo12HourFormat } from '../../utils/convertTime';
+import { convertTo12HourFormat } from '../../utils/cardUtils';
 
 const CardType = {
   Card: 'Card',

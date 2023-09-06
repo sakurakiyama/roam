@@ -119,7 +119,7 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
       ref={drag}
       className={`p-2 ${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move m-2 flex items-center`}
+      } text-xl font-bold cursor-move m-2 flex flex-col items-center bg-green-100`}
     >
       {cardData ? (
         <Collapse
