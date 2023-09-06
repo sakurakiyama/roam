@@ -15,6 +15,8 @@ import type { DatePickerProps } from 'antd';
 import { Dayjs } from 'dayjs';
 import { formatDate } from '../../utils/cardUtils';
 
+// TODO: [] Add default checked in the collapsable component once selected
+
 const CardType = {
   Card: 'Card',
 };
@@ -51,12 +53,13 @@ function DateCard({ name, id }: ActivityCardProps): JSX.Element {
       ref={drag}
       className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move mx-2 flex items-center`}
+      } text-xl font-bold cursor-move mx-2 flex items-center `}
     >
+      {/* If the card data is generated, show the collapsable component */}
       {cardData ? (
         <Collapse
           collapsible='icon'
-          className='w-full'
+          className='w-full bg-white'
           defaultActiveKey={['1']}
           items={[
             {
@@ -67,7 +70,7 @@ function DateCard({ name, id }: ActivityCardProps): JSX.Element {
           ]}
         />
       ) : (
-        <div className='border rounded-md w-full p-4'>
+        <div className='border rounded-md w-full p-4 bg-white'>
           <DatePicker onChange={onChange} />
         </div>
       )}

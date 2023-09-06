@@ -1,3 +1,12 @@
+/**
+ * **************************************************
+ *
+ * @description
+ * This file stores all the utils for the cards.
+ *
+ * **************************************************
+ */
+
 import FlightCard from '../components/cards/FlightCard';
 import HotelCard from '../components/cards/HotelCard';
 import RestaurantCard from '../components/cards/RestaurantCard';
@@ -7,6 +16,7 @@ import DateCard from '../components/cards/DateCard';
 
 import { v4 as uuidv4 } from 'uuid';
 
+// Converts the timestamp to the correct format
 export function convertTo12HourFormat(timestamp: string) {
   const date = new Date(timestamp);
   const hours = date.getHours();
@@ -22,6 +32,7 @@ export function convertTo12HourFormat(timestamp: string) {
   return formattedTime;
 }
 
+// Creates new cards when dropped
 export function createNewCards(item: { name: string; id?: string }) {
   switch (item.name) {
     case 'Flight Card':
@@ -39,6 +50,7 @@ export function createNewCards(item: { name: string; id?: string }) {
   }
 }
 
+// Handles the rearranging of cards and creation of placeholders in the appropriate places
 export function zipCards(
   cards: JSX.Element[],
   setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>
@@ -58,6 +70,7 @@ export function zipCards(
   return result;
 }
 
+// Formats the date
 export function formatDate(inputDate: string) {
   const dateObj = new Date(inputDate);
 

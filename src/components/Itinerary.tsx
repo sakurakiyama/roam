@@ -24,6 +24,7 @@ function Itinerary(): JSX.Element {
     () => ({
       accept: CardType.Card,
       drop: (item: { name: string; id: string }) => {
+        // Only update state here if it's the first component to be dropped. Otherwise, the placeholder handles this logic.
         setCards((prevState) => {
           if (prevState.length === 0) {
             const newCard: JSX.Element = createNewCards(item);

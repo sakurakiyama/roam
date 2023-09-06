@@ -12,11 +12,10 @@ import { Collapse, Form, Input, Button } from 'antd';
 import { useState } from 'react';
 
 /*
-TODO: [X] Add logic for rendering placeholders when fields have not been populated.
-TODO: Use API to generate fields
-TODO: Format inputted times
-TODO: Add icon 
-TODO: Add confirmed or pending 
+TODO: [] Use API to generate fields
+TODO: [] Format inputted times
+TODO: [] Add icon or flexibility of choosing an icon 
+TODO: [] Add whether the booking is confirmed or pending 
 */
 
 const CardType = {
@@ -58,6 +57,7 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
     }),
   }));
 
+  // Handles form submission
   async function handleFormSubmit(values: FormValues) {
     try {
       const {
@@ -82,6 +82,7 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
     }
   }
 
+  // Array to later generate the form inputs and placeholder values
   const formItems = [
     {
       label: 'Hotel Name',
@@ -121,10 +122,11 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
         isDragging ? 'opacity-50' : 'opacity-100'
       } text-xl font-bold cursor-move mx-2 flex items-center`}
     >
+      {/* If the card data is generated, show the collapsable component and generate values based on inputs */}
       {cardData ? (
         <Collapse
           collapsible='icon'
-          className='w-full ml-10'
+          className='w-full ml-10 bg-white'
           defaultActiveKey={['1']}
           items={[
             {
@@ -219,7 +221,7 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
           ]}
         />
       ) : (
-        <div className='border rounded-md w-full p-4 ml-10'>
+        <div className='border rounded-md w-full p-4 ml-10 bg-white'>
           <Form form={form} onFinish={handleFormSubmit}>
             {formItems.map((item) => (
               <Form.Item

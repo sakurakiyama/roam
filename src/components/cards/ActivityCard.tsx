@@ -58,6 +58,7 @@ function ActivityCard({ name, id }: ActivityCardProps): JSX.Element {
     }),
   }));
 
+  // Handle form submission
   async function handleFormSubmit(values: FormValues) {
     try {
       const {
@@ -81,6 +82,7 @@ function ActivityCard({ name, id }: ActivityCardProps): JSX.Element {
     }
   }
 
+  // Listen for changes to the checkbox and only allow one checked item.
   const onChange = (checkedValue: CheckboxValueType[]) => {
     const selectedValue = checkedValue[0] as string;
     let updatedOptions;
@@ -99,6 +101,7 @@ function ActivityCard({ name, id }: ActivityCardProps): JSX.Element {
     setOptions(updatedOptions);
   };
 
+  // Array to later generate the form inputs and placeholder values
   const formItems = [
     {
       label: 'Activity Description',
@@ -132,12 +135,13 @@ function ActivityCard({ name, id }: ActivityCardProps): JSX.Element {
       ref={drag}
       className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move mx-2 flex  items-center`}
+      } text-xl font-bold cursor-move mx-2 flex items-center`}
     >
+      {/* If the card data is generated, show the collapsable component and generate values based on inputs */}
       {cardData ? (
         <Collapse
           collapsible='icon'
-          className='w-full ml-10'
+          className='w-full ml-10 bg-white'
           defaultActiveKey={['1']}
           items={[
             {
@@ -232,7 +236,7 @@ function ActivityCard({ name, id }: ActivityCardProps): JSX.Element {
           ]}
         />
       ) : (
-        <div className='border rounded-md w-full p-4 ml-10'>
+        <div className='border rounded-md w-full p-4 ml-10 bg-white'>
           <Form form={form} onFinish={handleFormSubmit}>
             {formItems.map((item) => (
               <Form.Item
