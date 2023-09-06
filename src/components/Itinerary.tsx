@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -21,7 +20,7 @@ const CardType = {
 function Itinerary(): JSX.Element {
   const [cards, setCards] = useState<JSX.Element[]>([]);
 
-  const [{ isOver }, drop] = useDrop(
+  const [, drop] = useDrop(
     () => ({
       accept: CardType.Card,
       drop: (item: { name: string; id: string }) => {
@@ -45,7 +44,10 @@ function Itinerary(): JSX.Element {
   );
 
   return (
-    <div className='border-solid border-2 h-full' ref={drop}>
+    <div
+      className='border-solid shadow-md mt-4 h-[85vh] overflow-y-auto'
+      ref={drop}
+    >
       <div>
         {cards.map((card) => {
           return <div key={card.props.id}>{card}</div>;

@@ -7,10 +7,6 @@
  * **************************************************
  */
 
-/*
-TODO: [X] Add dropdown for type of meal (lunch, dinner, drinks etc)
-*/
-
 import { useDrag } from 'react-dnd';
 import { Collapse, Form, Input, Button, Checkbox } from 'antd';
 import { useState } from 'react';
@@ -133,39 +129,33 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
   return (
     <div
       ref={drag}
-      className={`p-2 ${
+      className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move m-2 flex items-center bg-red-100`}
+      } text-xl font-bold cursor-move mx-2 flex items-center`}
     >
       {cardData ? (
         <Collapse
           collapsible='icon'
-          className='w-full'
+          className='w-full ml-10'
           defaultActiveKey={['1']}
           items={[
             {
               key: '1',
               label: (
                 <div>
-                  <div className='flex pb-5'>
+                  <div className='flex'>
                     {cardData.arrivalTime}
                     <div className='pl-5'>
                       {cardData.selectedValue} at {cardData.restaurantName}
                       <ul>
-                        {cardData.restaurantAddress
-                          ? `Address: ${cardData.restaurantAddress}`
-                          : undefined}
+                        {cardData.restaurantAddress &&
+                          `Address: ${cardData.restaurantAddress}`}
                       </ul>
                       <ul>
-                        {cardData.restaurantPhone
-                          ? `Phone Number: ${cardData.restaurantPhone}`
-                          : undefined}
+                        {cardData.restaurantPhone &&
+                          `Phone Number: ${cardData.restaurantPhone}`}
                       </ul>
-                      <ul>
-                        {cardData.notes
-                          ? `Notes: ${cardData.notes}`
-                          : undefined}
-                      </ul>
+                      <ul>{cardData.notes && `Notes: ${cardData.notes}`}</ul>
                     </div>
                   </div>
                 </div>
@@ -241,7 +231,7 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
           ]}
         />
       ) : (
-        <div className='border rounded-md w-full p-4'>
+        <div className='border rounded-md w-full p-4 ml-10'>
           <Form form={form} onFinish={handleFormSubmit}>
             {formItems.map((item) => (
               <Form.Item

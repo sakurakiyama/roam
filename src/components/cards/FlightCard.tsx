@@ -113,31 +113,32 @@ function FlightCard({ name, id }: FlightCardProps): JSX.Element {
     <div
       ref={drag}
       key={id}
-      className={`p-2 ${
+      className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move m-2 flex items-center`}
+      } text-xl font-bold cursor-move mx-2 flex items-center`}
     >
       {cardData ? (
         <Collapse
           collapsible='icon'
-          className='w-full'
+          className='w-full ml-10'
           defaultActiveKey={['1']}
           items={[
             {
               key: '1',
               label: (
                 <div>
-                  <div className='flex pb-5'>
+                  <div className='flex'>
                     {cardData.departureTime}
-                    <div className='pl-5'>
+                    <div className='pl-5 pb-5'>
                       Depart {cardData.departureAirport} for{' '}
                       {cardData.arrivalAirport} on {cardData.flightNumber}
                       <ul>
-                        Confirmation Number: {cardData.confirmationNumber}
+                        {cardData.confirmationNumber &&
+                          `Confirmation Number: ${cardData.confirmationNumber} `}
                       </ul>
                       <ul>Departure Gate: {cardData.departureGate}</ul>
-                      <ul>Seats: {cardData.seat}</ul>
-                      <ul>Notes: {cardData.notes}</ul>
+                      <ul>{cardData.seat && `Seats: ${cardData.seat}`}</ul>
+                      <ul>{cardData.notes && `Notes: ${cardData.notes}`}</ul>
                     </div>
                   </div>
                   <div className='flex'>
@@ -193,7 +194,7 @@ function FlightCard({ name, id }: FlightCardProps): JSX.Element {
           ]}
         />
       ) : (
-        <div className='border rounded-md w-full p-4'>
+        <div className='border rounded-md w-full p-4 ml-10'>
           <Form form={form} onFinish={handleFormSubmit}>
             {formItems.map((item) => (
               <Form.Item

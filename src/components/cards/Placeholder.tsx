@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -95,8 +94,16 @@ function Placeholder({ setCards, id }: PlaceholderProps): JSX.Element {
   );
 
   return (
-    <div id={id} className='border-solid border-2 h-full' ref={drop}>
-      This is the invisible card.
+    <div
+      id={id}
+      className={
+        isOver
+          ? 'animate-pulse border-dotted border-2 border-indigo-300 h-[120px] m-2 bg-stone-100 text-center flex justify-center items-center'
+          : 'h-[5px] m-2'
+      }
+      ref={drop}
+    >
+      {isOver ? 'Drop here!' : ''}
     </div>
   );
 }

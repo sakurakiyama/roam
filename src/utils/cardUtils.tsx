@@ -1,7 +1,9 @@
 import FlightCard from '../components/cards/FlightCard';
 import HotelCard from '../components/cards/HotelCard';
 import RestaurantCard from '../components/cards/RestaurantCard';
+import ActivityCard from '../components/cards/ActivityCard';
 import Placeholder from '../components/cards/Placeholder';
+import DateCard from '../components/cards/DateCard';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -28,6 +30,10 @@ export function createNewCards(item: { name: string; id?: string }) {
       return <HotelCard name='Hotel Card' id={uuidv4()} />;
     case 'Restaurant Card':
       return <RestaurantCard name='Restaurant Card' id={uuidv4()} />;
+    case 'Activity Card':
+      return <ActivityCard name='Activity Card' id={uuidv4()} />;
+    case 'Date Card':
+      return <DateCard name='Date Card' id={uuidv4()} />;
     default:
       return <div>A broken div, I see!</div>;
   }
@@ -50,4 +56,40 @@ export function zipCards(
     []
   );
   return result;
+}
+
+export function formatDate(inputDate: string) {
+  const dateObj = new Date(inputDate);
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  const dayNames = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+
+  const day = dayNames[dateObj.getDay()];
+  const month = monthNames[dateObj.getMonth()];
+  const year = dateObj.getFullYear();
+
+  const dayOfMonth = dateObj.getDate();
+  return `${day}, ${month} ${dayOfMonth}, ${year}`;
 }

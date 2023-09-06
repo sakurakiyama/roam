@@ -9,12 +9,13 @@
 
 import { useDrag } from 'react-dnd';
 import { CardLabelTypes } from '../../types';
+import { Card } from 'antd';
 
 const CardType = {
   Card: 'Card',
 };
 
-function CardLabels({ name, icon }: CardLabelTypes): JSX.Element {
+function CardLabels({ name, icon, color }: CardLabelTypes): JSX.Element {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: CardType.Card,
     item: { name },
@@ -28,10 +29,21 @@ function CardLabels({ name, icon }: CardLabelTypes): JSX.Element {
       ref={drag}
       className={`p-2 ${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move bg-stone-200 shadow-sm m-2 flex items-center`}
+      } text-xl font-bold cursor-move m-2 flex items-center`}
     >
-      <div className='mr-2'>{icon}</div>
-      <div>{name}</div>
+      <Card
+        className='w-full border border-solid border-1 shadow-sm '
+        title={
+          <div
+            className={`w-11 h-11 ${color} rounded-full flex items-center justify-center shadow-sm`}
+          >
+            {icon}
+          </div>
+        }
+        bordered={true}
+      >
+        {name}
+      </Card>
     </div>
   );
 }

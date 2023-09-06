@@ -117,44 +117,37 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
   return (
     <div
       ref={drag}
-      className={`p-2 ${
+      className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move m-2 flex flex-col items-center bg-green-100`}
+      } text-xl font-bold cursor-move mx-2 flex items-center`}
     >
       {cardData ? (
         <Collapse
           collapsible='icon'
-          className='w-full'
+          className='w-full ml-10'
           defaultActiveKey={['1']}
           items={[
             {
               key: '1',
               label: (
                 <div>
-                  <div className='flex pb-5'>
+                  <div className='flex'>
                     {cardData.arrivalTime}
                     <div className='pl-5'>
                       Check in to {cardData.hotelName}
                       <ul>
-                        {cardData.hotelAddress
-                          ? `Address: ${cardData.hotelAddress}`
-                          : undefined}
+                        {cardData.hotelAddress &&
+                          `Address: ${cardData.hotelAddress}`}
                       </ul>
                       <ul>
-                        {cardData.hotelPhone
-                          ? `Phone Number: ${cardData.hotelPhone}`
-                          : undefined}
+                        {cardData.hotelPhone &&
+                          `Phone Number: ${cardData.hotelPhone}`}
                       </ul>
                       <ul>
-                        {cardData.confirmationNumber
-                          ? `Confirmation Number: ${cardData.confirmationNumber}`
-                          : undefined}
+                        {cardData.confirmationNumber &&
+                          `Confirmation Number: ${cardData.confirmationNumber}`}
                       </ul>
-                      <ul>
-                        {cardData.notes
-                          ? `Notes: ${cardData.notes}`
-                          : undefined}
-                      </ul>
+                      <ul>{cardData.notes && `Notes: ${cardData.notes}`}</ul>
                     </div>
                   </div>
                 </div>
@@ -226,7 +219,7 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
           ]}
         />
       ) : (
-        <div className='border rounded-md w-full p-4'>
+        <div className='border rounded-md w-full p-4 ml-10'>
           <Form form={form} onFinish={handleFormSubmit}>
             {formItems.map((item) => (
               <Form.Item
