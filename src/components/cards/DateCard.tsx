@@ -2,7 +2,7 @@
  * **************************************************
  *
  * @description
- * This component renders the draggable activity card.
+ * This component renders the draggable date card.
  *
  * **************************************************
  */
