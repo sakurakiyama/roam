@@ -8,12 +8,13 @@
  */
 
 import { useDrag } from 'react-dnd';
-import { Collapse, Form, Input, Button } from 'antd';
+import { Collapse, Form, Input, Button, TimePicker } from 'antd';
 import { useState } from 'react';
+import { Dayjs } from 'dayjs';
 
 /*
 TODO: [] Use API to generate fields
-TODO: [] Format inputted times
+TODO: [x] Format inputted times
 TODO: [] Add icon or flexibility of choosing an icon 
 TODO: [] Add whether the booking is confirmed or pending 
 */
@@ -33,21 +34,27 @@ interface CardData {
   hotelPhone: string;
   confirmationNumber: string;
   notes: string;
-  arrivalTime: string;
 }
 
+interface TimeData {
+  value: Dayjs | null;
+  dateString: string;
+}
 interface FormValues {
   hotelName: string;
   hotelAddress: string;
   hotelPhone: string;
   confirmationNumber: string;
   notes: string;
-  arrivalTime: string;
 }
 
 function HotelCard({ name, id }: HotelCardProps): JSX.Element {
   const [cardData, setCardData] = useState<CardData | undefined>(undefined);
+  const [time, setTime] = useState<TimeData | undefined>(undefined);
+  const [timeError, setTimeError] = useState<string>('');
   const [form] = Form.useForm();
+
+  const format = 'hh:mm A';
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: CardType.Card,
@@ -59,15 +66,14 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
 
   // Handles form submission
   async function handleFormSubmit(values: FormValues) {
+    if (!time?.dateString) {
+      setTimeError('Please enter an arrival time');
+      return;
+    }
+    setTimeError('');
     try {
-      const {
-        hotelName,
-        hotelAddress,
-        hotelPhone,
-        confirmationNumber,
-        notes,
-        arrivalTime,
-      } = values;
+      const { hotelName, hotelAddress, hotelPhone, confirmationNumber, notes } =
+        values;
 
       setCardData({
         hotelName,
@@ -75,11 +81,19 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
         hotelPhone,
         confirmationNumber,
         notes,
-        arrivalTime,
       });
     } catch (error) {
       console.log(error);
     }
+  }
+
+  function onChange(value: Dayjs | null, dateString: string) {
+    if (value === null) {
+      setTimeError('Please enter an arrival time');
+      return;
+    }
+    setTimeError('');
+    setTime({ value, dateString });
   }
 
   // Array to later generate the form inputs and placeholder values
@@ -105,13 +119,6 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
       name: 'hotelPhone',
       placeholder: 'e.g: (212) 758-5700',
     },
-    {
-      label: 'Arrival Time',
-      name: 'arrivalTime',
-      placeholder: 'e.g: 07:00 PM',
-      required: true,
-    },
-
     { label: 'Notes', name: 'notes' },
   ];
 
@@ -134,7 +141,7 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
               label: (
                 <div>
                   <div className='flex'>
-                    {cardData.arrivalTime}
+                    {time?.dateString}
                     <div className='pl-5'>
                       Check in to {cardData.hotelName}
                       <ul>
@@ -199,22 +206,30 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
                       }
                     />
                   </Form.Item>
-                  <Form.Item
-                    label='Arrival Time'
-                    name='arrivalTime'
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please enter the arrival time',
-                      },
-                    ]}
-                  >
-                    <Input placeholder={cardData.arrivalTime} />
-                  </Form.Item>
                   <Form.Item label='Notes' name='notes'>
                     <Input placeholder={cardData.notes} />
                   </Form.Item>
-                  <Button htmlType='submit'>Submit</Button>
+                  <div
+                    className={`flex items-center ${timeError ? '' : 'pb-4'}`}
+                  >
+                    <span className='text-red-500 pr-1'>* </span> Arrival Time:
+                    <TimePicker
+                      use12Hours
+                      defaultValue={
+                        time ? (time.value as Dayjs | undefined) : undefined
+                      }
+                      className='ml-2'
+                      status={timeError ? 'error' : ''}
+                      onChange={onChange}
+                      format={format}
+                    />
+                  </div>
+                  <div className={timeError ? 'pb-4 text-red-500' : ''}>
+                    {timeError}
+                  </div>
+                  <div>
+                    <Button htmlType='submit'>Submit</Button>
+                  </div>
                 </Form>
               ),
             },
@@ -242,7 +257,22 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
                 <Input placeholder={item.placeholder} />
               </Form.Item>
             ))}
-            <Button htmlType='submit'>Submit</Button>
+            <div className={`flex items-center ${timeError ? '' : 'pb-4'}`}>
+              <span className='text-red-500 pr-1'>*</span> Arrival Time:
+              <TimePicker
+                use12Hours
+                className='ml-2'
+                status={timeError ? 'error' : ''}
+                onChange={onChange}
+                format={format}
+              />
+            </div>
+            <div className={timeError ? 'pb-4 text-red-500' : ''}>
+              {timeError}
+            </div>
+            <div>
+              <Button htmlType='submit'>Submit</Button>
+            </div>
           </Form>
         </div>
       )}

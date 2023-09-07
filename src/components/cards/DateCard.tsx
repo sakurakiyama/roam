@@ -71,7 +71,7 @@ function DateCard({ name, id }: ActivityCardProps): JSX.Element {
         />
       ) : (
         <div className='border rounded-md w-full p-4 bg-white'>
-          <DatePicker onChange={onChange} />
+          <DatePicker defaultValue={Date} onChange={onChange} />
         </div>
       )}
     </div>
