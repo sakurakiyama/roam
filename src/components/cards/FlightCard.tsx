@@ -9,22 +9,14 @@
 
 import { useDrag } from 'react-dnd';
 import { useState } from 'react';
-import { Collapse, Form, Input, Button } from 'antd';
+import { Collapse, Form, Button } from 'antd';
 import axios from 'axios';
-import { convertTo12HourFormat } from '../../utils/cardUtils';
+import { convertTo12HourFormat, renderFormItems } from '../../utils/cardUtils';
+import { CardProps, CardType } from '../../types';
 
 // TODO: [] Add logic for if the flight is not found.
 
-const CardType = {
-  Card: 'Card',
-};
-
-interface FlightCardProps {
-  name: string;
-  id: null | string;
-}
-
-interface FormValues {
+interface FlightFormValues {
   flightNumber: string;
   departureAirport: string;
   confirmationNumber: string;
@@ -32,7 +24,7 @@ interface FormValues {
   seat: string;
 }
 
-interface CardData {
+interface FlightCardData {
   flightNumber: string;
   confirmationNumber: string;
   notes: string;
@@ -45,13 +37,39 @@ interface CardData {
   arrivalAirport: string;
 }
 
-function FlightCard({ name, id }: FlightCardProps): JSX.Element {
-  const [cardData, setCardData] = useState<CardData | undefined>(undefined);
+function FlightCard({ name, id }: CardProps): JSX.Element {
+  const [cardData, setCardData] = useState<FlightCardData | undefined>(
+    undefined
+  );
   const [form] = Form.useForm();
+
+  // Array to later generate the form inputs and placeholder values
+  const formItems = [
+    {
+      label: 'Departure Airport',
+      name: 'departureAirport',
+      placeholder: 'e.g: JFK',
+      required: true,
+    },
+    {
+      label: 'Flight Number',
+      name: 'flightNumber',
+      placeholder: 'e.g: DL230',
+      required: true,
+    },
+    {
+      label: 'Confirmation Number',
+      name: 'confirmationNumber',
+      placeholder: 'e.g: MH6LM',
+    },
+    { label: 'Seats', name: 'seat', placeholder: 'e.g: 12B' },
+    { label: 'Notes', name: 'notes' },
+  ];
+
   const API_KEY = import.meta.env.VITE_ACCESS_KEY;
 
   // Handles form submission
-  async function handleFormSubmit(values: FormValues) {
+  const handleFormSubmit = async (values: FlightFormValues) => {
     try {
       const {
         flightNumber,
@@ -79,7 +97,7 @@ function FlightCard({ name, id }: FlightCardProps): JSX.Element {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: CardType.Card,
@@ -88,29 +106,6 @@ function FlightCard({ name, id }: FlightCardProps): JSX.Element {
       isDragging: !!monitor.isDragging(),
     }),
   }));
-
-  // Array to later generate the form inputs and placeholder values
-  const formItems = [
-    {
-      label: 'Departure Airport',
-      name: 'departureAirport',
-      placeholder: 'e.g: JFK',
-      required: true,
-    },
-    {
-      label: 'Flight Number',
-      name: 'flightNumber',
-      placeholder: 'e.g: DL230',
-      required: true,
-    },
-    {
-      label: 'Confirmation Number',
-      name: 'confirmationNumber',
-      placeholder: 'e.g: MH6LM',
-    },
-    { label: 'Seats', name: 'seat', placeholder: 'e.g: 12B' },
-    { label: 'Notes', name: 'notes' },
-  ];
 
   return (
     <div
@@ -155,42 +150,10 @@ function FlightCard({ name, id }: FlightCardProps): JSX.Element {
               ),
               children: (
                 <Form form={form} onFinish={handleFormSubmit}>
-                  <Form.Item
-                    label='Departure Airport'
-                    name='departureAirport'
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please enter the airport code',
-                      },
-                    ]}
-                  >
-                    <Input placeholder={cardData.departureAirport} />
-                  </Form.Item>
-                  <Form.Item
-                    label='Flight Number'
-                    name='flightNumber'
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please enter a flight number',
-                      },
-                    ]}
-                  >
-                    <Input placeholder={cardData.flightNumber} />
-                  </Form.Item>
-                  <Form.Item
-                    label='Confirmation Number'
-                    name='confirmationNumber'
-                  >
-                    <Input placeholder={cardData.confirmationNumber} />
-                  </Form.Item>
-                  <Form.Item label='Seats' name='seat'>
-                    <Input placeholder={cardData.seat} />
-                  </Form.Item>
-                  <Form.Item label='Notes' name='notes'>
-                    <Input placeholder={cardData.notes} />
-                  </Form.Item>
+                  {renderFormItems(
+                    cardData as unknown as { [key: string]: string },
+                    formItems
+                  )}
                   <Button htmlType='submit'>Submit</Button>
                 </Form>
               ),
@@ -200,25 +163,10 @@ function FlightCard({ name, id }: FlightCardProps): JSX.Element {
       ) : (
         <div className='border rounded-md w-full p-4 ml-10 bg-white'>
           <Form form={form} onFinish={handleFormSubmit}>
-            {formItems.map((item) => (
-              <Form.Item
-                key={item.name}
-                label={item.label}
-                name={item.name}
-                rules={
-                  item.required
-                    ? [
-                        {
-                          required: true,
-                          message: `Please enter ${item.label.toLowerCase()}`,
-                        },
-                      ]
-                    : undefined
-                }
-              >
-                <Input placeholder={item.placeholder} />
-              </Form.Item>
-            ))}
+            {renderFormItems(
+              cardData as unknown as { [key: string]: string },
+              formItems
+            )}
             <Button htmlType='submit'>Submit</Button>
           </Form>
         </div>

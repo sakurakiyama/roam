@@ -10,10 +10,7 @@
 import { useDrop } from 'react-dnd';
 import { v4 as uuidv4 } from 'uuid';
 import { createNewCards, zipCards } from '../../utils/cardUtils';
-
-const CardType = {
-  Card: 'Card',
-};
+import { CardType } from '../../types';
 
 interface PlaceholderProps {
   setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>;

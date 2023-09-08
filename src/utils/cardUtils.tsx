@@ -13,11 +13,14 @@ import RestaurantCard from '../components/cards/RestaurantCard';
 import ActivityCard from '../components/cards/ActivityCard';
 import Placeholder from '../components/cards/Placeholder';
 import DateCard from '../components/cards/DateCard';
-
+import { Form, Input } from 'antd';
+import { Dayjs } from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
+import { TimeData, FormItem } from '../types';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 
 // Converts the timestamp to the correct format
-export function convertTo12HourFormat(timestamp: string) {
+export const convertTo12HourFormat = (timestamp: string) => {
   const date = new Date(timestamp);
   const hours = date.getHours();
   const minutes = date.getMinutes();
@@ -30,10 +33,10 @@ export function convertTo12HourFormat(timestamp: string) {
 
   const formattedTime = `${formattedHours}:${formattedMinutes} ${period}`;
   return formattedTime;
-}
+};
 
 // Creates new cards when dropped
-export function createNewCards(item: { name: string; id?: string }) {
+export const createNewCards = (item: { name: string; id?: string }) => {
   switch (item.name) {
     case 'Flight Card':
       return <FlightCard name='Flight Card' id={uuidv4()} />;
@@ -48,13 +51,13 @@ export function createNewCards(item: { name: string; id?: string }) {
     default:
       return <div>A broken div, I see!</div>;
   }
-}
+};
 
 // Handles the rearranging of cards and creation of placeholders in the appropriate places
-export function zipCards(
+export const zipCards = (
   cards: JSX.Element[],
   setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>
-) {
+) => {
   const noPlaceholders = cards.filter((card) => {
     return card.props.name;
   });
@@ -68,10 +71,10 @@ export function zipCards(
     []
   );
   return result;
-}
+};
 
 // Formats the date
-export function formatDate(inputDate: string) {
+export const formatDate = (inputDate: string) => {
   const dateObj = new Date(inputDate);
 
   const monthNames = [
@@ -105,4 +108,73 @@ export function formatDate(inputDate: string) {
 
   const dayOfMonth = dateObj.getDate();
   return `${day}, ${month} ${dayOfMonth}, ${year}`;
-}
+};
+
+// Renders the form items
+export const renderFormItems = (
+  cardData: { [key: string]: string } | undefined,
+  formItems: FormItem[]
+) => {
+  return formItems.map((item) => (
+    <Form.Item
+      key={item.name}
+      label={item.label}
+      name={item.name}
+      rules={
+        item.required
+          ? [
+              {
+                required: true,
+                message: `Please enter ${item.label.toLowerCase()}`,
+              },
+            ]
+          : undefined
+      }
+    >
+      <Input
+        placeholder={
+          cardData ? cardData[item.name] || item.placeholder : item.placeholder
+        }
+      />
+    </Form.Item>
+  ));
+};
+
+// Checks to see if the time has changed and if not, sets an error
+export const handleTimeChange = (
+  value: Dayjs | null,
+  dateString: string,
+  setTime: (time: TimeData) => void,
+  setTimeError: (error: string) => void
+) => {
+  if (value === null) {
+    setTimeError('Please enter an arrival time');
+    return;
+  }
+  setTimeError('');
+  setTime({ value, dateString });
+};
+
+// Only allow one checked item and update state
+export const handleCheckBoxChange = (
+  checkedValue: CheckboxValueType[],
+  setSelected: (selected: CheckboxValueType) => void,
+  setOptions: (options: { label: string; value: string }[]) => void,
+  options: { label: string; value: string }[]
+) => {
+  const selectedValue = checkedValue[0] as string;
+  let updatedOptions;
+  if (selectedValue === undefined) {
+    updatedOptions = options.map((option) => ({
+      ...option,
+      disabled: false,
+    }));
+  } else {
+    updatedOptions = options.map((option) => ({
+      ...option,
+      disabled: option.value !== selectedValue,
+    }));
+  }
+  setSelected(selectedValue);
+  setOptions(updatedOptions);
+};

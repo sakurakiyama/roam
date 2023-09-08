@@ -8,38 +8,38 @@
  */
 
 import { useDrag } from 'react-dnd';
-import { Collapse, Form, Input, Button, Checkbox } from 'antd';
+import { Collapse, Form, Button, Checkbox, TimePicker } from 'antd';
 import { useState } from 'react';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
+import { Dayjs } from 'dayjs';
+import {
+  renderFormItems,
+  handleTimeChange,
+  handleCheckBoxChange,
+} from '../../utils/cardUtils';
+import { CardType, TimeData, FormItem, CardProps } from '../../types';
 
-const CardType = {
-  Card: 'Card',
-};
-
-interface RestaurantCardProps {
-  name: string;
-  id: null | string;
-}
-
-interface CardData {
+interface RestaurantCardData {
   restaurantName: string;
   restaurantAddress: string;
   restaurantPhone: string;
   notes: string;
-  arrivalTime: string;
   selectedValue: CheckboxValueType;
 }
 
-interface FormValues {
+interface RestaurantFormValues {
   restaurantName: string;
   restaurantAddress: string;
   restaurantPhone: string;
   notes: string;
-  arrivalTime: string;
 }
 
-function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
-  const [cardData, setCardData] = useState<CardData | undefined>(undefined);
+function RestaurantCard({ name, id }: CardProps): JSX.Element {
+  const [cardData, setCardData] = useState<RestaurantCardData | undefined>(
+    undefined
+  );
+  const [time, setTime] = useState<TimeData | undefined>(undefined);
+  const [timeError, setTimeError] = useState<string>('');
   const [selected, setSelected] = useState<CheckboxValueType>(false);
   const [options, setOptions] = useState([
     { label: 'Dinner', value: 'Dinner' },
@@ -47,6 +47,8 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
     { label: 'Breakfast', value: 'Breakfast' },
     { label: 'Drinks', value: 'Drinks' },
   ]);
+
+  const format = 'hh:mm A';
 
   const [form] = Form.useForm();
 
@@ -59,50 +61,40 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
   }));
 
   // Handles form submission
-  async function handleFormSubmit(values: FormValues) {
+  const handleFormSubmit = async (values: RestaurantFormValues) => {
+    if (!time?.dateString) {
+      setTimeError('Please enter an arrival time');
+      return;
+    }
+    setTimeError('');
     try {
-      const {
-        restaurantName,
-        restaurantAddress,
-        restaurantPhone,
-        notes,
-        arrivalTime,
-      } = values;
+      const { restaurantName, restaurantAddress, restaurantPhone, notes } =
+        values;
 
       setCardData({
         restaurantName,
         restaurantAddress,
         restaurantPhone,
         notes,
-        arrivalTime,
         selectedValue: selected,
       });
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  // Listen for changes to the checkbox and only allow one checked item.
-  const onChange = (checkedValue: CheckboxValueType[]) => {
-    const selectedValue = checkedValue[0] as string;
-    let updatedOptions;
-    if (selectedValue === undefined) {
-      updatedOptions = options.map((option) => ({
-        ...option,
-        disabled: false,
-      }));
-    } else {
-      updatedOptions = options.map((option) => ({
-        ...option,
-        disabled: option.value !== selectedValue,
-      }));
-    }
-    setSelected(selectedValue);
-    setOptions(updatedOptions);
+  // Handles changes to the time picker
+  const onTimeChange = (value: Dayjs | null, dateString: string) => {
+    handleTimeChange(value, dateString, setTime, setTimeError);
+  };
+
+  // Listen for changes to the checkbox and only allow one checked item
+  const onCheckBoxChange = (checkedValue: CheckboxValueType[]) => {
+    handleCheckBoxChange(checkedValue, setSelected, setOptions, options);
   };
 
   // Array to later generate the form inputs and placeholder values
-  const formItems = [
+  const formItems: FormItem[] = [
     {
       label: 'Restaurant Name',
       name: 'restaurantName',
@@ -119,13 +111,6 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
       name: 'restaurantPhone',
       placeholder: 'e.g: (718) 783-4565',
     },
-    {
-      label: 'Arrival Time',
-      name: 'arrivalTime',
-      placeholder: 'e.g: 07:00 PM',
-      required: true,
-    },
-
     { label: 'Notes', name: 'notes' },
   ];
 
@@ -148,7 +133,7 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
               label: (
                 <div>
                   <div className='flex'>
-                    {cardData.arrivalTime}
+                    {time?.dateString}
                     <div className='pl-5'>
                       {cardData.selectedValue} at {cardData.restaurantName}
                       <ul>
@@ -167,51 +152,28 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
 
               children: (
                 <Form form={form} onFinish={handleFormSubmit}>
-                  <Form.Item
-                    label='Restaurant Name'
-                    name='restaurantName'
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please enter the restaurant name',
-                      },
-                    ]}
+                  {renderFormItems(
+                    cardData as unknown as { [key: string]: string },
+                    formItems
+                  )}
+                  <div
+                    className={`flex items-center ${timeError ? '' : 'pb-4'}`}
                   >
-                    <Input placeholder={cardData.restaurantName} />
-                  </Form.Item>
-                  <Form.Item label='Address' name='restaurantAddress'>
-                    <Input
-                      placeholder={
-                        cardData.restaurantAddress
-                          ? cardData.restaurantAddress
-                          : 'e.g: 248 5th Ave, Brooklyn, NY 11215'
+                    <span className='text-red-500 pr-1'>* </span> Arrival Time:
+                    <TimePicker
+                      use12Hours
+                      defaultValue={
+                        time ? (time.value as Dayjs | undefined) : undefined
                       }
+                      className='ml-2'
+                      status={timeError ? 'error' : ''}
+                      onChange={onTimeChange}
+                      format={format}
                     />
-                  </Form.Item>
-                  <Form.Item label='Phone Number' name='restaurantPhone'>
-                    <Input
-                      placeholder={
-                        cardData.restaurantPhone
-                          ? cardData.restaurantPhone
-                          : 'e.g: (718) 783-4565'
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label='Arrival Time'
-                    name='arrivalTime'
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please enter the arrival time',
-                      },
-                    ]}
-                  >
-                    <Input placeholder={cardData.arrivalTime} />
-                  </Form.Item>
-                  <Form.Item label='Notes' name='notes'>
-                    <Input placeholder={cardData.notes} />
-                  </Form.Item>
+                  </div>
+                  <div className={timeError ? 'pb-4 text-red-500' : ''}>
+                    {timeError}
+                  </div>
                   <Form.Item
                     label='Type'
                     name='selectedOptions'
@@ -225,7 +187,7 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
                     <Checkbox.Group
                       options={options}
                       defaultValue={[cardData.selectedValue]}
-                      onChange={onChange}
+                      onChange={onCheckBoxChange}
                     />
                   </Form.Item>
                   <Button htmlType='submit'>Submit</Button>
@@ -237,25 +199,22 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
       ) : (
         <div className='border rounded-md w-full p-4 ml-10 bg-white'>
           <Form form={form} onFinish={handleFormSubmit}>
-            {formItems.map((item) => (
-              <Form.Item
-                key={item.name}
-                label={item.label}
-                name={item.name}
-                rules={
-                  item.required
-                    ? [
-                        {
-                          required: true,
-                          message: `Please enter ${item.label.toLowerCase()}`,
-                        },
-                      ]
-                    : undefined
-                }
-              >
-                <Input placeholder={item.placeholder} />
-              </Form.Item>
-            ))}
+            {renderFormItems(cardData, formItems)}
+
+            <div className={`flex items-center ${timeError ? '' : 'pb-4'}`}>
+              <span className='text-red-500 pr-1'>*</span> Arrival Time:
+              <TimePicker
+                use12Hours
+                className='ml-2'
+                status={timeError ? 'error' : ''}
+                onChange={onTimeChange}
+                format={format}
+              />
+            </div>
+            <div className={timeError ? 'pb-4 text-red-500' : ''}>
+              {timeError}
+            </div>
+            <div></div>
             <Form.Item
               label='Type'
               name='selectedOptions'
@@ -266,7 +225,7 @@ function RestaurantCard({ name, id }: RestaurantCardProps): JSX.Element {
                 },
               ]}
             >
-              <Checkbox.Group options={options} onChange={onChange} />
+              <Checkbox.Group options={options} onChange={onCheckBoxChange} />
             </Form.Item>
 
             <Button htmlType='submit'>Submit</Button>

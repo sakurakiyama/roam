@@ -8,9 +8,11 @@
  */
 
 import { useDrag } from 'react-dnd';
-import { Collapse, Form, Input, Button, TimePicker } from 'antd';
+import { Collapse, Form, Button, TimePicker } from 'antd';
 import { useState } from 'react';
 import { Dayjs } from 'dayjs';
+import { renderFormItems, handleTimeChange } from '../../utils/cardUtils';
+import { CardType, TimeData, FormItem, CardProps } from '../../types';
 
 /*
 TODO: [] Use API to generate fields
@@ -19,16 +21,7 @@ TODO: [] Add icon or flexibility of choosing an icon
 TODO: [] Add whether the booking is confirmed or pending 
 */
 
-const CardType = {
-  Card: 'Card',
-};
-
-interface HotelCardProps {
-  name: string;
-  id: null | string;
-}
-
-interface CardData {
+interface HotelCardData {
   hotelName: string;
   hotelAddress: string;
   hotelPhone: string;
@@ -36,11 +29,7 @@ interface CardData {
   notes: string;
 }
 
-interface TimeData {
-  value: Dayjs | null;
-  dateString: string;
-}
-interface FormValues {
+interface HotelFormValues {
   hotelName: string;
   hotelAddress: string;
   hotelPhone: string;
@@ -48,12 +37,13 @@ interface FormValues {
   notes: string;
 }
 
-function HotelCard({ name, id }: HotelCardProps): JSX.Element {
-  const [cardData, setCardData] = useState<CardData | undefined>(undefined);
+function HotelCard({ name, id }: CardProps): JSX.Element {
+  const [cardData, setCardData] = useState<HotelCardData | undefined>(
+    undefined
+  );
   const [time, setTime] = useState<TimeData | undefined>(undefined);
   const [timeError, setTimeError] = useState<string>('');
   const [form] = Form.useForm();
-
   const format = 'hh:mm A';
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -65,7 +55,7 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
   }));
 
   // Handles form submission
-  async function handleFormSubmit(values: FormValues) {
+  const handleFormSubmit = async (values: HotelFormValues) => {
     if (!time?.dateString) {
       setTimeError('Please enter an arrival time');
       return;
@@ -85,19 +75,15 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  function onChange(value: Dayjs | null, dateString: string) {
-    if (value === null) {
-      setTimeError('Please enter an arrival time');
-      return;
-    }
-    setTimeError('');
-    setTime({ value, dateString });
-  }
+  // Handles changes to the time picker
+  const onTimeChange = (value: Dayjs | null, dateString: string) => {
+    handleTimeChange(value, dateString, setTime, setTimeError);
+  };
 
   // Array to later generate the form inputs and placeholder values
-  const formItems = [
+  const formItems: FormItem[] = [
     {
       label: 'Hotel Name',
       name: 'hotelName',
@@ -164,51 +150,10 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
 
               children: (
                 <Form form={form} onFinish={handleFormSubmit}>
-                  <Form.Item
-                    label='Hotel Name'
-                    name='hotelName'
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please enter the hotel name',
-                      },
-                    ]}
-                  >
-                    <Input placeholder={cardData.hotelName} />
-                  </Form.Item>
-                  <Form.Item label='Address' name='hotelAddress'>
-                    <Input
-                      placeholder={
-                        cardData.hotelAddress
-                          ? cardData.hotelAddress
-                          : 'e.g: 57 E 57th St, New York, NY 10022'
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label='Confirmation Number'
-                    name='confirmationNumber'
-                  >
-                    <Input
-                      placeholder={
-                        cardData.confirmationNumber
-                          ? cardData.confirmationNumber
-                          : 'e.g: LM6G7AHE6'
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item label='Phone Number' name='hotelPhone'>
-                    <Input
-                      placeholder={
-                        cardData.hotelPhone
-                          ? cardData.hotelPhone
-                          : 'e.g: (212) 758-5700'
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item label='Notes' name='notes'>
-                    <Input placeholder={cardData.notes} />
-                  </Form.Item>
+                  {renderFormItems(
+                    cardData as unknown as { [key: string]: string },
+                    formItems
+                  )}
                   <div
                     className={`flex items-center ${timeError ? '' : 'pb-4'}`}
                   >
@@ -220,7 +165,7 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
                       }
                       className='ml-2'
                       status={timeError ? 'error' : ''}
-                      onChange={onChange}
+                      onChange={onTimeChange}
                       format={format}
                     />
                   </div>
@@ -238,32 +183,14 @@ function HotelCard({ name, id }: HotelCardProps): JSX.Element {
       ) : (
         <div className='border rounded-md w-full p-4 ml-10 bg-white'>
           <Form form={form} onFinish={handleFormSubmit}>
-            {formItems.map((item) => (
-              <Form.Item
-                key={item.name}
-                label={item.label}
-                name={item.name}
-                rules={
-                  item.required
-                    ? [
-                        {
-                          required: true,
-                          message: `Please enter ${item.label.toLowerCase()}`,
-                        },
-                      ]
-                    : undefined
-                }
-              >
-                <Input placeholder={item.placeholder} />
-              </Form.Item>
-            ))}
+            {renderFormItems(cardData, formItems)}
             <div className={`flex items-center ${timeError ? '' : 'pb-4'}`}>
               <span className='text-red-500 pr-1'>*</span> Arrival Time:
               <TimePicker
                 use12Hours
                 className='ml-2'
                 status={timeError ? 'error' : ''}
-                onChange={onChange}
+                onChange={onTimeChange}
                 format={format}
               />
             </div>
