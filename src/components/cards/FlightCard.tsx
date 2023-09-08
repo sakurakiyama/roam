@@ -13,6 +13,7 @@ import { Collapse, Form, Button } from 'antd';
 import axios from 'axios';
 import { convertTo12HourFormat, renderFormItems } from '../../utils/cardUtils';
 import { CardProps, CardType } from '../../types';
+import Trash from '../shared/Trash';
 
 // TODO: [] Add logic for if the flight is not found.
 
@@ -37,7 +38,7 @@ interface FlightCardData {
   arrivalAirport: string;
 }
 
-function FlightCard({ name, id }: CardProps): JSX.Element {
+function FlightCard({ name, id, setCards }: CardProps): JSX.Element {
   const [cardData, setCardData] = useState<FlightCardData | undefined>(
     undefined
   );
@@ -113,7 +114,7 @@ function FlightCard({ name, id }: CardProps): JSX.Element {
       key={id}
       className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move mx-2 flex items-center`}
+      } text-xl font-bold cursor-move mx-2 flex items-center space-x-4 `}
     >
       {/* If the card data is generated, show the collapsable component and generate values based on inputs */}
       {cardData ? (
@@ -171,6 +172,7 @@ function FlightCard({ name, id }: CardProps): JSX.Element {
           </Form>
         </div>
       )}
+      <Trash id={id} setCards={setCards} />
     </div>
   );
 }

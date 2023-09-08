@@ -36,18 +36,31 @@ export const convertTo12HourFormat = (timestamp: string) => {
 };
 
 // Creates new cards when dropped
-export const createNewCards = (item: { name: string; id?: string }) => {
+export const createNewCards = (
+  item: { name: string; id?: string },
+  setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>
+) => {
   switch (item.name) {
     case 'Flight Card':
-      return <FlightCard name='Flight Card' id={uuidv4()} />;
+      return (
+        <FlightCard name='Flight Card' id={uuidv4()} setCards={setCards} />
+      );
     case 'Hotel Card':
-      return <HotelCard name='Hotel Card' id={uuidv4()} />;
+      return <HotelCard name='Hotel Card' id={uuidv4()} setCards={setCards} />;
     case 'Restaurant Card':
-      return <RestaurantCard name='Restaurant Card' id={uuidv4()} />;
+      return (
+        <RestaurantCard
+          name='Restaurant Card'
+          id={uuidv4()}
+          setCards={setCards}
+        />
+      );
     case 'Activity Card':
-      return <ActivityCard name='Activity Card' id={uuidv4()} />;
+      return (
+        <ActivityCard name='Activity Card' id={uuidv4()} setCards={setCards} />
+      );
     case 'Date Card':
-      return <DateCard name='Date Card' id={uuidv4()} />;
+      return <DateCard name='Date Card' id={uuidv4()} setCards={setCards} />;
     default:
       return <div>A broken div, I see!</div>;
   }

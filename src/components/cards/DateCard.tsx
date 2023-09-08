@@ -14,7 +14,8 @@ import { useState } from 'react';
 import type { DatePickerProps } from 'antd';
 import { Dayjs } from 'dayjs';
 import { formatDate } from '../../utils/cardUtils';
-import { CardProps, CardType } from '../../types';
+import { CardType, CardProps } from '../../types';
+import Trash from '../shared/Trash';
 
 interface DateCardData {
   date: Dayjs | null;
@@ -22,7 +23,7 @@ interface DateCardData {
   formattedDate: string;
 }
 
-function DateCard({ name, id }: CardProps): JSX.Element {
+function DateCard({ name, id, setCards }: CardProps): JSX.Element {
   const [cardData, setCardData] = useState<DateCardData | undefined>(undefined);
 
   const onChange: DatePickerProps['onChange'] = (date, dateString) => {
@@ -43,7 +44,7 @@ function DateCard({ name, id }: CardProps): JSX.Element {
       ref={drag}
       className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move mx-2 flex items-center `}
+      } text-xl font-bold cursor-move mx-2 flex items-center space-x-4 `}
     >
       {/* If the card data is generated, show the collapsable component */}
       {cardData ? (
@@ -69,6 +70,7 @@ function DateCard({ name, id }: CardProps): JSX.Element {
           <DatePicker onChange={onChange} />
         </div>
       )}
+      <Trash id={id} setCards={setCards} />
     </div>
   );
 }

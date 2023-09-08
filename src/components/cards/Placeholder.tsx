@@ -28,7 +28,7 @@ function Placeholder({ setCards, id }: PlaceholderProps): JSX.Element {
             const allCards = [];
             for (let i = 0; i < prevState.length; i++) {
               if (prevState[i].props.id === id) {
-                const newCard: JSX.Element = createNewCards(item);
+                const newCard: JSX.Element = createNewCards(item, setCards);
                 allCards.push(newCard);
               } else {
                 allCards.push(prevState[i]);

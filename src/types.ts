@@ -25,4 +25,5 @@ export interface FormItem {
 export interface CardProps {
   name: string;
   id: null | string;
+  setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
 }

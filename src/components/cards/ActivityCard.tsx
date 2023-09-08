@@ -18,6 +18,7 @@ import {
   handleCheckBoxChange,
   handleTimeChange,
 } from '../../utils/cardUtils';
+import Trash from '../shared/Trash';
 
 interface ActivityCardData {
   activityName: string;
@@ -34,7 +35,7 @@ interface ActivityFormValues {
   notes: string;
 }
 
-function ActivityCard({ name, id }: CardProps): JSX.Element {
+function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
   const [cardData, setCardData] = useState<ActivityCardData | undefined>(
     undefined
   );
@@ -118,7 +119,7 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
       ref={drag}
       className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move mx-2 flex items-center`}
+      } text-xl font-bold cursor-move mx-2 flex items-center space-x-4 `}
     >
       {/* If the card data is generated, show the collapsable component and generate values based on inputs */}
       {cardData ? (
@@ -230,6 +231,7 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
           </Form>
         </div>
       )}
+      <Trash id={id} setCards={setCards} />
     </div>
   );
 }

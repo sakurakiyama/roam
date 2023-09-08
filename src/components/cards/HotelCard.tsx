@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { Dayjs } from 'dayjs';
 import { renderFormItems, handleTimeChange } from '../../utils/cardUtils';
 import { CardType, TimeData, FormItem, CardProps } from '../../types';
+import Trash from '../shared/Trash';
 
 /*
 TODO: [] Use API to generate fields
@@ -37,7 +38,7 @@ interface HotelFormValues {
   notes: string;
 }
 
-function HotelCard({ name, id }: CardProps): JSX.Element {
+function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
   const [cardData, setCardData] = useState<HotelCardData | undefined>(
     undefined
   );
@@ -113,7 +114,7 @@ function HotelCard({ name, id }: CardProps): JSX.Element {
       ref={drag}
       className={`${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } text-xl font-bold cursor-move mx-2 flex items-center`}
+      } text-xl font-bold cursor-move mx-2 flex items-center space-x-4`}
     >
       {/* If the card data is generated, show the collapsable component and generate values based on inputs */}
       {cardData ? (
@@ -203,6 +204,7 @@ function HotelCard({ name, id }: CardProps): JSX.Element {
           </Form>
         </div>
       )}
+      <Trash id={id} setCards={setCards} />
     </div>
   );
 }
