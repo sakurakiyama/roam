@@ -8,18 +8,22 @@
  */
 
 import { useDrag } from 'react-dnd';
-import { Collapse, Form, Button, Checkbox } from 'antd';
+import { Collapse, Form, Button, Checkbox, TimePicker } from 'antd';
 import { useState } from 'react';
+import { Dayjs } from 'dayjs';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
-import { CardProps, CardType } from '../../types';
-import { renderFormItems, handleCheckBoxChange } from '../../utils/cardUtils';
+import { CardProps, CardType, TimeData } from '../../types';
+import {
+  renderFormItems,
+  handleCheckBoxChange,
+  handleTimeChange,
+} from '../../utils/cardUtils';
 
 interface ActivityCardData {
   activityName: string;
   activityAddress: string;
   activityPhone: string;
   notes: string;
-  arrivalTime: string;
   selectedValue: CheckboxValueType;
 }
 
@@ -28,7 +32,6 @@ interface ActivityFormValues {
   activityAddress: string;
   activityPhone: string;
   notes: string;
-  arrivalTime: string;
 }
 
 function ActivityCard({ name, id }: CardProps): JSX.Element {
@@ -42,6 +45,11 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
     { label: 'Sailing', value: 'Sailing' },
     { label: 'Relaxing', value: 'Relaxing' },
   ]);
+  const [time, setTime] = useState<TimeData | undefined>(undefined);
+  const [timeError, setTimeError] = useState<string>('');
+
+  const [form] = Form.useForm();
+  const format = 'hh:mm A';
 
   // Array to later generate the form inputs and placeholder values
   const formItems = [
@@ -62,17 +70,8 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
       name: 'activityPhone',
       placeholder: 'e.g: +57 300 8057290',
     },
-    {
-      label: 'Arrival Time',
-      name: 'arrivalTime',
-      placeholder: 'e.g: 12:00 PM',
-      required: true,
-    },
-
     { label: 'Notes', name: 'notes' },
   ];
-
-  const [form] = Form.useForm();
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: CardType.Card,
@@ -84,21 +83,19 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
 
   // Handle form submission
   const handleFormSubmit = async (values: ActivityFormValues) => {
+    if (!time?.dateString) {
+      setTimeError('Please enter an arrival time');
+      return;
+    }
+    setTimeError('');
     try {
-      const {
-        activityName,
-        activityAddress,
-        activityPhone,
-        notes,
-        arrivalTime,
-      } = values;
+      const { activityName, activityAddress, activityPhone, notes } = values;
 
       setCardData({
         activityName,
         activityAddress,
         activityPhone,
         notes,
-        arrivalTime,
         selectedValue: selected,
       });
     } catch (error) {
@@ -106,6 +103,12 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
     }
   };
 
+  // Handles changes to the time picker
+  const onTimeChange = (value: Dayjs | null, dateString: string) => {
+    handleTimeChange(value, dateString, setTime, setTimeError);
+  };
+
+  // Listen for changes to the checkbox and only allow one checked item
   const onCheckBoxChange = (checkedValue: CheckboxValueType[]) => {
     handleCheckBoxChange(checkedValue, setSelected, setOptions, options);
   };
@@ -129,7 +132,7 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
               label: (
                 <div>
                   <div className='flex'>
-                    {cardData.arrivalTime}
+                    {/* {cardData.arrivalTime} */}
                     <div className='pl-5'>
                       {cardData.activityName}
                       <ul>
@@ -167,6 +170,24 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
                       onChange={onCheckBoxChange}
                     />
                   </Form.Item>
+                  <div
+                    className={`flex items-center ${timeError ? '' : 'pb-4'}`}
+                  >
+                    <span className='text-red-500 pr-1'>* </span> Arrival Time:
+                    <TimePicker
+                      use12Hours
+                      defaultValue={
+                        time ? (time.value as Dayjs | undefined) : undefined
+                      }
+                      className='ml-2'
+                      status={timeError ? 'error' : ''}
+                      onChange={onTimeChange}
+                      format={format}
+                    />
+                  </div>
+                  <div className={timeError ? 'pb-4 text-red-500' : ''}>
+                    {timeError}
+                  </div>
                   <Button htmlType='submit'>Submit</Button>
                 </Form>
               ),
@@ -192,6 +213,19 @@ function ActivityCard({ name, id }: CardProps): JSX.Element {
             >
               <Checkbox.Group options={options} onChange={onCheckBoxChange} />
             </Form.Item>
+            <div className={`flex items-center ${timeError ? '' : 'pb-4'}`}>
+              <span className='text-red-500 pr-1'>*</span> Arrival Time:
+              <TimePicker
+                use12Hours
+                className='ml-2'
+                status={timeError ? 'error' : ''}
+                onChange={onTimeChange}
+                format={format}
+              />
+            </div>
+            <div className={timeError ? 'pb-4 text-red-500' : ''}>
+              {timeError}
+            </div>
             <Button htmlType='submit'>Submit</Button>
           </Form>
         </div>
