@@ -133,7 +133,7 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
               label: (
                 <div>
                   <div className='flex'>
-                    {/* {cardData.arrivalTime} */}
+                    {time?.dateString}
                     <div className='pl-5'>
                       {cardData.activityName}
                       <ul>
