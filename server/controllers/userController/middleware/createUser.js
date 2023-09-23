@@ -2,10 +2,11 @@
 /**
  * ====================================
  *        MIDDLEWARE FUNCTION
+ * This middleware adds user to datbase
  * ====================================
  */
 
-import Users from '../../../models/model.js';
+import { Users } from '../../../models/model.js';
 
 const createUser = async (req, res, next) => {
   try {
