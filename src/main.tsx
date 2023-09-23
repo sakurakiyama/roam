@@ -4,6 +4,7 @@ import App from './App.tsx';
 import './index.css';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { BrowserRouter } from 'react-router-dom';
+import UserProvider from './utils/UserProvider.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Auth0Provider
@@ -16,9 +17,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     }}
   >
     <React.StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </UserProvider>
     </React.StrictMode>
   </Auth0Provider>
 );
