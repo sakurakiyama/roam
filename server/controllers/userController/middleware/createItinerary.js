@@ -2,6 +2,8 @@
 /*
  * ====================================
  *        MIDDLEWARE FUNCTION
+ * This middleware creates new
+ * itineraries
  * ====================================
  */
 
@@ -14,7 +16,11 @@ const createItinerary = async (req, res, next) => {
     res.locals.newItinerary = itinerary;
     return next();
   } catch (error) {
-    console.log(error);
+    return next({
+      log: `Error occured in userController.createItinerary middleware: ${error}`,
+      status: 400,
+      message: { error: 'Unable to create an itinerary.' },
+    });
   }
 };
 
