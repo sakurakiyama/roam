@@ -11,6 +11,7 @@ import { useDrop } from 'react-dnd';
 import { v4 as uuidv4 } from 'uuid';
 import { createNewCards, zipCards } from '../../utils/cardUtils';
 import { CardType } from '../../types';
+import { useParams } from 'react-router-dom';
 
 interface PlaceholderProps {
   setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
@@ -18,17 +19,25 @@ interface PlaceholderProps {
 }
 
 function Placeholder({ setCards, id }: PlaceholderProps): JSX.Element {
+  const { itineraryID } = useParams();
+
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: CardType.Card,
-      drop: (item: { name: string; id: string }) => {
+      drop: async (item: { name: string; id: string }) => {
         // If the item id is undefined, we know it's a new card that's been dropped.
         if (!item.id) {
+          const newCard: JSX.Element = await createNewCards(
+            item,
+            itineraryID,
+            setCards
+          );
+
           setCards((prevState) => {
             const allCards = [];
+            // Insert new card at the current placeholder location by id.
             for (let i = 0; i < prevState.length; i++) {
               if (prevState[i].props.id === id) {
-                const newCard: JSX.Element = createNewCards(item, setCards);
                 allCards.push(newCard);
               } else {
                 allCards.push(prevState[i]);
