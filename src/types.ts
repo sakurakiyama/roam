@@ -6,6 +6,13 @@ export interface CardLabelTypes {
   color: string;
 }
 
+export interface UserData {
+  _id: string;
+  email: string;
+  startData: string;
+  username: string;
+}
+
 export const CardType = {
   Card: 'Card',
 };
