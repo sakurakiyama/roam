@@ -1,12 +1,15 @@
-import React from 'react';
 import './App.css';
-import Home from './pages/Home';
+import Build from './pages/Build';
+import Manage from './pages/Manage';
+
+import { Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
-    <>
-      <Home />
-    </>
+    <Routes>
+      <Route path='/' element={<Manage />}></Route>
+      <Route path='/build/:itineraryID' element={<Build />}></Route>
+    </Routes>
   );
 }
 
