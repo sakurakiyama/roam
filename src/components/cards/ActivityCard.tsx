@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -19,20 +20,23 @@ import {
   handleTimeChange,
 } from '../../utils/cardUtils';
 import Trash from '../shared/Trash';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface ActivityCardData {
   activityName: string;
   activityAddress: string;
   activityPhone: string;
-  notes: string;
-  selectedValue: CheckboxValueType;
+  activityNotes: string;
+  selectedActivityValue: CheckboxValueType;
 }
 
 interface ActivityFormValues {
   activityName: string;
   activityAddress: string;
   activityPhone: string;
-  notes: string;
+  activityNotes: string;
 }
 
 function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
@@ -71,7 +75,7 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
       name: 'activityPhone',
       placeholder: 'e.g: +57 300 8057290',
     },
-    { label: 'Notes', name: 'notes' },
+    { label: 'Notes', name: 'activityNotes' },
   ];
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -90,15 +94,25 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
     }
     setTimeError('');
     try {
-      const { activityName, activityAddress, activityPhone, notes } = values;
+      const { activityName, activityAddress, activityPhone, activityNotes } =
+        values;
 
-      setCardData({
+      const activityCardData = {
         activityName,
         activityAddress,
         activityPhone,
-        notes,
-        selectedValue: selected,
+        activityNotes,
+        selectedActivityValue: selected,
+      };
+      const { data: updatedCard } = await axios.patch('/user/updateCard', {
+        id,
+        type: name,
+        ...activityCardData,
       });
+
+      // TODO: [] Update the interface to reflect the returned object and use said object to update state
+      setCardData(activityCardData);
+      toast('✅ Saved successfully.');
     } catch (error) {
       console.log(error);
     }
@@ -144,7 +158,10 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
                         {cardData.activityPhone &&
                           `Phone Number: ${cardData.activityPhone}`}
                       </ul>
-                      <ul>{cardData.notes && `Notes: ${cardData.notes}`}</ul>
+                      <ul>
+                        {cardData.activityNotes &&
+                          `Notes: ${cardData.activityNotes}`}
+                      </ul>
                     </div>
                   </div>
                 </div>
@@ -167,7 +184,7 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
                   >
                     <Checkbox.Group
                       options={options}
-                      defaultValue={[cardData.selectedValue]}
+                      defaultValue={[cardData.selectedActivityValue]}
                       onChange={onCheckBoxChange}
                     />
                   </Form.Item>

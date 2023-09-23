@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -16,6 +17,9 @@ import { Dayjs } from 'dayjs';
 import { formatDate } from '../../utils/cardUtils';
 import { CardType, CardProps } from '../../types';
 import Trash from '../shared/Trash';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface DateCardData {
   date: Dayjs | null;
@@ -26,9 +30,19 @@ interface DateCardData {
 function DateCard({ name, id, setCards }: CardProps): JSX.Element {
   const [cardData, setCardData] = useState<DateCardData | undefined>(undefined);
 
-  const onChange: DatePickerProps['onChange'] = (date, dateString) => {
+  const onChange: DatePickerProps['onChange'] = async (date, dateString) => {
     const formattedDate = formatDate(dateString);
+    const { data: updatedCard } = await axios.patch('/user/updateCard', {
+      id,
+      type: name,
+      date,
+      dateString,
+      formattedDate,
+    });
+
+    // TODO: [] Update the interface to reflect the returned object and use said object to update state
     setCardData({ date, dateString, formattedDate });
+    toast('✅ Saved successfully.');
   };
 
   const [{ isDragging }, drag] = useDrag(() => ({

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -14,21 +15,23 @@ import axios from 'axios';
 import { convertTo12HourFormat, renderFormItems } from '../../utils/cardUtils';
 import { CardProps, CardType } from '../../types';
 import Trash from '../shared/Trash';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // TODO: [] Add logic for if the flight is not found.
 
 interface FlightFormValues {
   flightNumber: string;
   departureAirport: string;
-  confirmationNumber: string;
-  notes: string;
+  flightConfirmationNumber: string;
+  flightNotes: string;
   seat: string;
 }
 
 interface FlightCardData {
   flightNumber: string;
-  confirmationNumber: string;
-  notes: string;
+  flightConfirmationNumber: string;
+  flightNotes: string;
   seat: string;
   departureAirport: string;
   departureTime: string;
@@ -60,11 +63,11 @@ function FlightCard({ name, id, setCards }: CardProps): JSX.Element {
     },
     {
       label: 'Confirmation Number',
-      name: 'confirmationNumber',
+      name: 'flightConfirmationNumber',
       placeholder: 'e.g: MH6LM',
     },
     { label: 'Seats', name: 'seat', placeholder: 'e.g: 12B' },
-    { label: 'Notes', name: 'notes' },
+    { label: 'Notes', name: 'flightNotes' },
   ];
 
   const API_KEY = import.meta.env.VITE_ACCESS_KEY;
@@ -74,27 +77,36 @@ function FlightCard({ name, id, setCards }: CardProps): JSX.Element {
     try {
       const {
         flightNumber,
-        confirmationNumber,
+        flightConfirmationNumber,
         departureAirport,
-        notes,
+        flightNotes,
         seat,
       } = values;
       const { data } = await axios.get(
         `https://aviation-edge.com/v2/public/timetable?iataCode=${departureAirport}&type=departure&flight_iata=${flightNumber}&key=${API_KEY}`
       );
       const info = {
-        flightNumber: flightNumber,
-        confirmationNumber: confirmationNumber,
-        notes: notes,
-        seat: seat,
-        departureAirport: departureAirport,
+        flightNumber,
+        flightConfirmationNumber,
+        flightNotes,
+        seat,
+        departureAirport,
         departureTime: convertTo12HourFormat(data[0].departure.scheduledTime),
         departureGate: data[0].departure.gate,
         arrivalTime: convertTo12HourFormat(data[0].arrival.scheduledTime),
         arrivalGate: data[0].arrival.gate,
         arrivalAirport: data[0].arrival.iataCode,
       };
+
+      const { data: updatedCard } = await axios.patch('/user/updateCard', {
+        id,
+        type: name,
+        ...info,
+      });
+      // TODO: [] Update the interface to reflect the returned object and use said object to update state
+
       setCardData(info);
+      toast('✅ Saved successfully.');
     } catch (error) {
       console.log(error);
     }
@@ -133,12 +145,15 @@ function FlightCard({ name, id, setCards }: CardProps): JSX.Element {
                       Depart {cardData.departureAirport} for{' '}
                       {cardData.arrivalAirport} on {cardData.flightNumber}
                       <ul>
-                        {cardData.confirmationNumber &&
-                          `Confirmation Number: ${cardData.confirmationNumber} `}
+                        {cardData.flightConfirmationNumber &&
+                          `Confirmation Number: ${cardData.flightConfirmationNumber} `}
                       </ul>
                       <ul>Departure Gate: {cardData.departureGate}</ul>
                       <ul>{cardData.seat && `Seats: ${cardData.seat}`}</ul>
-                      <ul>{cardData.notes && `Notes: ${cardData.notes}`}</ul>
+                      <ul>
+                        {cardData.flightNotes &&
+                          `Notes: ${cardData.flightNotes}`}
+                      </ul>
                     </div>
                   </div>
                   <div className='flex'>

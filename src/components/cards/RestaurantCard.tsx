@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -19,20 +20,23 @@ import {
 } from '../../utils/cardUtils';
 import { CardType, TimeData, FormItem, CardProps } from '../../types';
 import Trash from '../shared/Trash';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface RestaurantCardData {
   restaurantName: string;
   restaurantAddress: string;
   restaurantPhone: string;
-  notes: string;
-  selectedValue: CheckboxValueType;
+  restaurantNotes: string;
+  selectedRestaurantValue: CheckboxValueType;
 }
 
 interface RestaurantFormValues {
   restaurantName: string;
   restaurantAddress: string;
   restaurantPhone: string;
-  notes: string;
+  restaurantNotes: string;
 }
 
 function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
@@ -69,16 +73,29 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
     }
     setTimeError('');
     try {
-      const { restaurantName, restaurantAddress, restaurantPhone, notes } =
-        values;
-
-      setCardData({
+      const {
         restaurantName,
         restaurantAddress,
         restaurantPhone,
-        notes,
-        selectedValue: selected,
+        restaurantNotes,
+      } = values;
+
+      const restaurantCardData = {
+        restaurantName,
+        restaurantAddress,
+        restaurantPhone,
+        restaurantNotes,
+        selectedRestaurantValue: selected,
+      };
+      const { data: updatedCard } = await axios.patch('/user/updateCard', {
+        id,
+        type: name,
+        ...restaurantCardData,
       });
+      // TODO: [] Update the interface to reflect the returned object and use said object to update state
+
+      setCardData(restaurantCardData);
+      toast('✅ Saved successfully.');
     } catch (error) {
       console.log(error);
     }
@@ -112,7 +129,7 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
       name: 'restaurantPhone',
       placeholder: 'e.g: (718) 783-4565',
     },
-    { label: 'Notes', name: 'notes' },
+    { label: 'Notes', name: 'restaurantNotes' },
   ];
 
   return (
@@ -136,7 +153,8 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
                   <div className='flex'>
                     {time?.dateString}
                     <div className='pl-5'>
-                      {cardData.selectedValue} at {cardData.restaurantName}
+                      {cardData.selectedRestaurantValue} at{' '}
+                      {cardData.restaurantName}
                       <ul>
                         {cardData.restaurantAddress &&
                           `Address: ${cardData.restaurantAddress}`}
@@ -145,7 +163,10 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
                         {cardData.restaurantPhone &&
                           `Phone Number: ${cardData.restaurantPhone}`}
                       </ul>
-                      <ul>{cardData.notes && `Notes: ${cardData.notes}`}</ul>
+                      <ul>
+                        {cardData.restaurantNotes &&
+                          `Notes: ${cardData.restaurantNotes}`}
+                      </ul>
                     </div>
                   </div>
                 </div>
@@ -187,7 +208,7 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
                   >
                     <Checkbox.Group
                       options={options}
-                      defaultValue={[cardData.selectedValue]}
+                      defaultValue={[cardData.selectedRestaurantValue]}
                       onChange={onCheckBoxChange}
                     />
                   </Form.Item>

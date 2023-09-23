@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -14,7 +15,9 @@ import { Dayjs } from 'dayjs';
 import { renderFormItems, handleTimeChange } from '../../utils/cardUtils';
 import { CardType, TimeData, FormItem, CardProps } from '../../types';
 import Trash from '../shared/Trash';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 /*
 TODO: [] Use API to generate fields
 TODO: [x] Format inputted times
@@ -26,16 +29,16 @@ interface HotelCardData {
   hotelName: string;
   hotelAddress: string;
   hotelPhone: string;
-  confirmationNumber: string;
-  notes: string;
+  hotelConfirmationNumber: string;
+  hotelNotes: string;
 }
 
 interface HotelFormValues {
   hotelName: string;
   hotelAddress: string;
   hotelPhone: string;
-  confirmationNumber: string;
-  notes: string;
+  hotelConfirmationNumber: string;
+  hotelNotes: string;
 }
 
 function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
@@ -63,16 +66,32 @@ function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
     }
     setTimeError('');
     try {
-      const { hotelName, hotelAddress, hotelPhone, confirmationNumber, notes } =
-        values;
-
-      setCardData({
+      const {
         hotelName,
         hotelAddress,
         hotelPhone,
-        confirmationNumber,
-        notes,
+        hotelConfirmationNumber,
+        hotelNotes,
+      } = values;
+
+      const hotelCardData = {
+        hotelName,
+        hotelAddress,
+        hotelPhone,
+        hotelConfirmationNumber,
+        hotelNotes,
+      };
+
+      const { data: updatedCard } = await axios.patch('/user/updateCard', {
+        id,
+        type: name,
+        ...hotelCardData,
       });
+
+      // TODO: [] Update the interface to reflect the returned object and use said object to update state
+
+      setCardData(hotelCardData);
+      toast('✅ Saved successfully.');
     } catch (error) {
       console.log(error);
     }
@@ -98,7 +117,7 @@ function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
     },
     {
       label: 'Confirmation Number',
-      name: 'confirmationNumber',
+      name: 'hotelConfirmationNumber',
       placeholder: 'e.g: LM6G7AHE6',
     },
     {
@@ -106,7 +125,7 @@ function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
       name: 'hotelPhone',
       placeholder: 'e.g: (212) 758-5700',
     },
-    { label: 'Notes', name: 'notes' },
+    { label: 'Notes', name: 'hotelNotes' },
   ];
 
   return (
@@ -140,10 +159,12 @@ function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
                           `Phone Number: ${cardData.hotelPhone}`}
                       </ul>
                       <ul>
-                        {cardData.confirmationNumber &&
-                          `Confirmation Number: ${cardData.confirmationNumber}`}
+                        {cardData.hotelConfirmationNumber &&
+                          `Confirmation Number: ${cardData.hotelConfirmationNumber}`}
                       </ul>
-                      <ul>{cardData.notes && `Notes: ${cardData.notes}`}</ul>
+                      <ul>
+                        {cardData.hotelNotes && `Notes: ${cardData.hotelNotes}`}
+                      </ul>
                     </div>
                   </div>
                 </div>
