@@ -2,6 +2,8 @@
 /*
  * ====================================
  *        MIDDLEWARE FUNCTION
+ * This middleware gets all a users
+ * itineraries
  * ====================================
  */
 
@@ -14,7 +16,11 @@ const getItineraries = async (req, res, next) => {
     res.locals.itineraries = itineraries;
     return next();
   } catch (error) {
-    console.log(error);
+    return next({
+      log: `Error occured in userController.getItineraries middleware: ${error}`,
+      status: 400,
+      message: { error: 'Unable to find users itineraries.' },
+    });
   }
 };
 
