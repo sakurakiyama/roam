@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -12,6 +13,10 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Placeholder from './cards/Placeholder';
 import { createNewCards } from '../utils/cardUtils';
+import { useContext } from 'react';
+import { UserContext } from '../utils/UserProvider';
+import { UserData } from '../types';
+import { useParams } from 'react-router-dom';
 
 const CardType = {
   Card: 'Card',
@@ -19,15 +24,27 @@ const CardType = {
 
 function Itinerary(): JSX.Element {
   const [cards, setCards] = useState<JSX.Element[]>([]);
+  const contextValue = useContext(UserContext) as {
+    user: UserData;
+    updateUser: (userData: UserData) => void;
+  };
+
+  const { user: userData } = contextValue;
+  const { itineraryID } = useParams();
 
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: CardType.Card,
-      drop: (item: { name: string; id: string }) => {
+      drop: async (item: { name: string; id: string }, monitor) => {
         // Only update state here if it's the first component to be dropped. Otherwise, the placeholder handles this logic.
+        if (monitor.didDrop()) return true;
+        const newCard: JSX.Element = await createNewCards(
+          item,
+          itineraryID,
+          setCards
+        );
         setCards((prevState) => {
           if (prevState.length === 0) {
-            const newCard: JSX.Element = createNewCards(item, setCards);
             return [
               <Placeholder setCards={setCards} id={uuidv4()} />,
               newCard,
@@ -43,6 +60,14 @@ function Itinerary(): JSX.Element {
     }),
     []
   );
+
+  // useEffect(() => {
+  //   const noPlaceholders = cards.filter((card) => {
+  //     return card.props.name;
+  //   });
+
+  //   console.log('removed placeholders: ', noPlaceholders);
+  // }, [cards]);
 
   return (
     <div
