@@ -2,10 +2,12 @@
 /**
  * ====================================
  *        MIDDLEWARE FUNCTION
+ * This middleware gets a users
+ * information
  * ====================================
  */
 
-import Users from '../../../models/model.js';
+import { Users } from '../../../models/model.js';
 
 const getUser = async (req, res, next) => {
   try {
