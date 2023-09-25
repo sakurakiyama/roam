@@ -1,3 +1,5 @@
+/* eslint-disable no-case-declarations */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * **************************************************
  *
@@ -18,6 +20,7 @@ import { Dayjs } from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { TimeData, FormItem } from '../types';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
+import axios from 'axios';
 
 // Converts the timestamp to the correct format
 export const convertTo12HourFormat = (timestamp: string) => {
@@ -36,31 +39,72 @@ export const convertTo12HourFormat = (timestamp: string) => {
 };
 
 // Creates new cards when dropped
-export const createNewCards = (
+export const createNewCards = async (
   item: { name: string; id?: string },
+  itineraryID: string | undefined,
   setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>
 ) => {
   switch (item.name) {
     case 'Flight Card':
+      const { data: newFlightCard } = await axios.post('/user/createNewCard', {
+        itineraryID,
+        type: item.name,
+      });
       return (
-        <FlightCard name='Flight Card' id={uuidv4()} setCards={setCards} />
-      );
-    case 'Hotel Card':
-      return <HotelCard name='Hotel Card' id={uuidv4()} setCards={setCards} />;
-    case 'Restaurant Card':
-      return (
-        <RestaurantCard
-          name='Restaurant Card'
-          id={uuidv4()}
+        <FlightCard
+          name='Flight Card'
+          id={newFlightCard._id}
           setCards={setCards}
         />
       );
-    case 'Activity Card':
+
+    case 'Hotel Card':
+      const { data: newHotelCard } = await axios.post('/user/createNewCard', {
+        itineraryID,
+        type: item.name,
+      });
       return (
-        <ActivityCard name='Activity Card' id={uuidv4()} setCards={setCards} />
+        <HotelCard
+          name='Hotel Card'
+          id={newHotelCard._id}
+          setCards={setCards}
+        />
       );
+
+    case 'Restaurant Card':
+      const { data: newRestaurantCard } = await axios.post(
+        '/user/createNewCard',
+        { itineraryID, type: item.name }
+      );
+      return (
+        <RestaurantCard
+          name='Restaurant Card'
+          id={newRestaurantCard._id}
+          setCards={setCards}
+        />
+      );
+
+    case 'Activity Card':
+      const { data: newActivityCard } = await axios.post(
+        '/user/createNewCard',
+        { itineraryID, type: item.name }
+      );
+      return (
+        <ActivityCard
+          name='Activity Card'
+          id={newActivityCard._id}
+          setCards={setCards}
+        />
+      );
+
     case 'Date Card':
-      return <DateCard name='Date Card' id={uuidv4()} setCards={setCards} />;
+      const { data: newDateCard } = await axios.post('/user/createNewCard', {
+        itineraryID,
+        type: item.name,
+      });
+      return (
+        <DateCard name='Date Card' id={newDateCard._id} setCards={setCards} />
+      );
     default:
       return <div>A broken div, I see!</div>;
   }
