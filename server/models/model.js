@@ -23,9 +23,10 @@ const userSchema = new Schema({
 const Users = mongoose.model('Users', userSchema);
 
 const itinerarySchema = new Schema({
-  itineraryName: { type: String, required: false },
+  itineraryName: { type: String, default: 'Untitled', required: false },
   userID: { type: String, required: true },
   cards: { type: Array, required: true },
+  createdAt: { type: Date, default: Date.now, required: true },
 });
 
 const Itineraries = mongoose.model('Itineraries', itinerarySchema);
