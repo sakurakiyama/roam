@@ -18,6 +18,11 @@ import { UserContext } from '../utils/UserProvider';
 import { UserData } from '../types';
 import { useParams } from 'react-router-dom';
 
+/* 
+TODO: [] Populate the itinerary from the database 
+TODO: [] Wherever cards is set, update the itinerary with those cards in the order
+*/
+
 const CardType = {
   Card: 'Card',
 };
@@ -60,14 +65,6 @@ function Itinerary(): JSX.Element {
     }),
     []
   );
-
-  // useEffect(() => {
-  //   const noPlaceholders = cards.filter((card) => {
-  //     return card.props.name;
-  //   });
-
-  //   console.log('removed placeholders: ', noPlaceholders);
-  // }, [cards]);
 
   return (
     <div
