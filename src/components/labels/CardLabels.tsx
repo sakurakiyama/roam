@@ -47,7 +47,14 @@ function CardLabels(): JSX.Element {
   return (
     <div>
       {cards.map((card) => {
-        return <Label name={card.name} icon={card.icon} color={card.color} />;
+        return (
+          <Label
+            key={card.name}
+            name={card.name}
+            icon={card.icon}
+            color={card.color}
+          />
+        );
       })}
     </div>
   );
