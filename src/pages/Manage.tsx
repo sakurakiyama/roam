@@ -83,12 +83,21 @@ function Manage() {
   return (
     <>
       <Nav />
-      <button onClick={createItinerary}>Create new itinerary</button>
       <div>
-        All Itineraries:
         {itineraries.map((element) => {
-          return <ul>{JSON.stringify(element)}</ul>;
+          return (
+            <div className='flex justify-between items-center border border-solid m-3 p-2 shadow-sm	rounded-lg'>
+              <div className='flex-1'>{`${element.itineraryName}`}</div>
+              <div className='flex space-x-2'>
+                <button className='text-blue-500'>View</button>
+                <button className='text-red-500'>Delete</button>
+              </div>
+            </div>
+          );
         })}
+      </div>
+      <div className='flex justify-center border border-solid m-3 p-2 shadow-sm	rounded-lg'>
+        <button onClick={createItinerary}>Create new itinerary</button>
       </div>
     </>
   );
