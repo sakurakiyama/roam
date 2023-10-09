@@ -9,7 +9,7 @@
  */
 
 import { useDrop } from 'react-dnd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Placeholder from './cards/Placeholder';
 import { createNewCards } from '../utils/cardUtils';
@@ -17,6 +17,7 @@ import { useContext } from 'react';
 import { UserContext } from '../utils/UserProvider';
 import { UserData } from '../types';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 /* 
 TODO: [] Populate the itinerary from the database 
@@ -27,12 +28,38 @@ const CardType = {
   Card: 'Card',
 };
 
+interface StoredCards {
+  type: string;
+  id: string;
+}
 function Itinerary(): JSX.Element {
   const [cards, setCards] = useState<JSX.Element[]>([]);
   const contextValue = useContext(UserContext) as {
     user: UserData;
     updateUser: (userData: UserData) => void;
   };
+
+  useEffect(() => {
+    const updateCards = async () => {
+      try {
+        if (cards.length > 0) {
+          const allCards: StoredCards[] = [];
+          cards.forEach((card) => {
+            if (card.props.name) {
+              allCards.push({ type: card.props.name, id: card.props.id });
+            }
+          });
+          await axios.patch('/user/updateItineraryCards', {
+            cards: allCards,
+            id: itineraryID,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    updateCards();
+  }, [cards]);
 
   const { user: userData } = contextValue;
   const { itineraryID } = useParams();

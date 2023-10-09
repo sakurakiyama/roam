@@ -235,3 +235,7 @@ export const handleCheckBoxChange = (
   setSelected(selectedValue);
   setOptions(updatedOptions);
 };
+
+export const renderCards = (cards: object[]) => {
+  console.log('cards are: ', cards);
+};

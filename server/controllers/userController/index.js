@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 /**
  * **************************************************
  *
@@ -19,7 +16,10 @@ import createItinerary from './middleware/createItinerary.js';
 import getItineraries from './middleware/getItineraries.js';
 import createNewCard from './middleware/createNewCard.js';
 import updateCard from './middleware/updateCard.js';
-import updateItinerary from './middleware/updateItineray.js';
+import updateItineraryTitle from './middleware/updateItineraryTitle.js';
+import deleteItinerary from './middleware/deleteItinerary.js';
+import updateItineraryCards from './middleware/updateItineraryCards.js';
+import getItineraryDetails from './middleware/getItineraryDetails.js';
 
 export default {
   getUser,
@@ -28,5 +28,8 @@ export default {
   getItineraries,
   createNewCard,
   updateCard,
-  updateItinerary,
+  updateItineraryTitle,
+  deleteItinerary,
+  updateItineraryCards,
+  getItineraryDetails,
 };

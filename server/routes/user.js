@@ -26,7 +26,35 @@ router.patch('/updateCard', userController.updateCard, (req, res) => {
   return res.status(200).json(res.locals.updatedCard);
 });
 
-router.patch('/updateItinerary', userController.updateItinerary, (req, res) => {
-  return res.status(200).json(res.locals.itinerary);
-});
+router.patch(
+  '/updateItineraryTitle',
+  userController.updateItineraryTitle,
+  (req, res) => {
+    return res.status(200).json(res.locals.itinerary);
+  }
+);
+
+router.delete(
+  '/deleteItinerary/:id',
+  userController.deleteItinerary,
+  (req, res) => {
+    return res.status(200).json('Deleted Successfully');
+  }
+);
+
+router.patch(
+  '/updateItineraryCards',
+  userController.updateItineraryCards,
+  (req, res) => {
+    return res.status(200).json(res.locals.itinerary);
+  }
+);
+
+router.get(
+  '/getItineraryDetails/:id',
+  userController.getItineraryDetails,
+  (req, res) => {
+    return res.status(200).json(res.locals.details);
+  }
+);
 export default router;

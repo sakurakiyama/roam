@@ -1,21 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /*
  * ====================================
  *        MIDDLEWARE FUNCTION
- * This middleware gets all a users
- * itineraries
+ * This middleware updates the cards for
+ * a given itinerary
  * ====================================
  */
 
 import { Itineraries } from '../../../models/model.js';
 
-const updateItinerary = async (req, res, next) => {
+const updateItineraryCards = async (req, res, next) => {
   try {
-    const { itineraryName, id } = req.body;
+    const { cards, id } = req.body;
     const itinerary = await Itineraries.findOneAndUpdate(
       { _id: id },
       {
-        itineraryName,
+        cards,
       },
       { returnOriginal: false }
     );
@@ -23,11 +22,11 @@ const updateItinerary = async (req, res, next) => {
     return next();
   } catch (error) {
     return next({
-      log: `Error occured in userController.getItineraries middleware: ${error}`,
+      log: `Error occured in userController.updatedItineraryCards middleware: ${error}`,
       status: 400,
-      message: { error: 'Unable to find users itineraries.' },
+      message: { error: 'Unable to update the cards for given itinerary.' },
     });
   }
 };
 
-export default updateItinerary;
+export default updateItineraryCards;
