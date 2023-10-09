@@ -8,7 +8,7 @@ import { ToastContainer, Zoom } from 'react-toastify';
 import { useState, useEffect } from 'react';
 import { Typography } from 'antd';
 import { useParams } from 'react-router-dom';
-import { renderCards } from '../utils/cardUtils';
+import { CardObj } from '../types';
 
 const { Title } = Typography;
 
@@ -17,6 +17,7 @@ function Build(): JSX.Element {
   const [itineraryTitle, setItineraryTitle] = useState(
     'Enter a name for your itinerary here.'
   );
+  const [cardArray, setCardArray] = useState<CardObj[] | []>([]);
 
   useEffect(() => {
     const getItineraryDetails = async () => {
@@ -24,12 +25,8 @@ function Build(): JSX.Element {
         const { data: itineraryDetails } = await axios.get(
           `/user/getItineraryDetails/${itineraryID}`
         );
-        await renderCards(itineraryDetails.cards);
-        // console.log('Itinerary Details are: ', itineraryDetails);
-
-        // iterate over the array of cards
-        // create a new card
-        // in each card, fill the card data with info
+        setItineraryTitle(itineraryDetails.itineraryName);
+        setCardArray(itineraryDetails.cards);
       } catch (error) {
         console.log(error);
       }
@@ -61,7 +58,7 @@ function Build(): JSX.Element {
                 {itineraryTitle}
               </Title>
             </div>
-            <Itinerary />
+            <Itinerary cardArray={cardArray} />
           </div>
         </div>
       </div>

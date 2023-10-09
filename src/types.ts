@@ -34,3 +34,8 @@ export interface CardProps {
   id: null | string;
   setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
 }
+
+export interface CardObj {
+  type: string;
+  id: string;
+}

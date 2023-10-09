@@ -21,6 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { TimeData, FormItem } from '../types';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import axios from 'axios';
+import { CardObj } from '../types';
 
 // Converts the timestamp to the correct format
 export const convertTo12HourFormat = (timestamp: string) => {
@@ -236,6 +237,41 @@ export const handleCheckBoxChange = (
   setOptions(updatedOptions);
 };
 
-export const renderCards = (cards: object[]) => {
-  console.log('cards are: ', cards);
+export const renderCards = (
+  cards: CardObj[],
+  setCards: React.Dispatch<React.SetStateAction<JSX.Element[]>>
+) => {
+  const allCards = cards.map((card) => {
+    switch (card.type) {
+      case 'Flight Card':
+        return (
+          <FlightCard name='Flight Card' id={card.id} setCards={setCards} />
+        );
+
+      case 'Hotel Card':
+        return <HotelCard name='Hotel Card' id={card.id} setCards={setCards} />;
+
+      case 'Restaurant Card':
+        return (
+          <RestaurantCard
+            name='Restaurant Card'
+            id={card.id}
+            setCards={setCards}
+          />
+        );
+
+      case 'Activity Card':
+        return (
+          <ActivityCard name='Activity Card' id={card.id} setCards={setCards} />
+        );
+
+      case 'Date Card':
+        return <DateCard name='Date Card' id={card.id} setCards={setCards} />;
+      default:
+        return <div>A broken div, I see!</div>;
+    }
+  });
+
+  const cardsToRender = zipCards(allCards, setCards);
+  setCards(cardsToRender);
 };

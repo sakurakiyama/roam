@@ -15,9 +15,10 @@ import Placeholder from './cards/Placeholder';
 import { createNewCards } from '../utils/cardUtils';
 import { useContext } from 'react';
 import { UserContext } from '../utils/UserProvider';
-import { UserData } from '../types';
+import { UserData, CardObj } from '../types';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { renderCards } from '../utils/cardUtils';
 
 /* 
 TODO: [] Populate the itinerary from the database 
@@ -32,12 +33,23 @@ interface StoredCards {
   type: string;
   id: string;
 }
-function Itinerary(): JSX.Element {
+
+interface ItineraryProps {
+  cardArray: CardObj[];
+}
+function Itinerary({ cardArray }: ItineraryProps): JSX.Element {
   const [cards, setCards] = useState<JSX.Element[]>([]);
+
   const contextValue = useContext(UserContext) as {
     user: UserData;
     updateUser: (userData: UserData) => void;
   };
+
+  useEffect(() => {
+    if (cardArray.length) {
+      renderCards(cardArray, setCards);
+    }
+  }, [cardArray]);
 
   useEffect(() => {
     const updateCards = async () => {
