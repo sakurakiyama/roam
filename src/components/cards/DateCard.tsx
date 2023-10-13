@@ -30,12 +30,13 @@ interface DateCardData {
 function DateCard({ name, id, setCards }: CardProps): JSX.Element {
   const [cardData, setCardData] = useState<DateCardData | undefined>(undefined);
 
-  ('2023-10-13T15:35:01.816Z');
   useEffect(() => {
     const getCardDetails = async () => {
       const { data: cardDetails } = await axios.get(
         `/user/getCardDetails/${id}/${name}`
       );
+
+      if (!cardDetails.dateString) return;
       const details: DateCardData = {
         date: dayjs(cardDetails.date) || null,
         dateString: cardDetails.dateString || '',

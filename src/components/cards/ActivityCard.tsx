@@ -84,6 +84,13 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
         `/user/getCardDetails/${id}/${name}`
       );
 
+      if (
+        !cardDetails.activityName ||
+        !cardDetails.selectedActivityValue ||
+        !cardDetails.activityArrivalTime
+      )
+        return;
+
       const details: ActivityCardData = {
         activityName: cardDetails.activityName || '',
         activityAddress: cardDetails.activityAddress || '',

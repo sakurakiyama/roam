@@ -61,6 +61,12 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
         `/user/getCardDetails/${id}/${name}`
       );
 
+      if (
+        !cardDetails.restaurantName ||
+        !cardDetails.restaurantArrivalTime ||
+        !cardDetails.restaurantArrivalTime
+      )
+        return;
       const details: RestaurantCardData = {
         restaurantName: cardDetails.restaurantName || '',
         restaurantAddress: cardDetails.restaurantAddress || '',

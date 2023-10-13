@@ -56,6 +56,8 @@ function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
         `/user/getCardDetails/${id}/${name}`
       );
 
+      if (!cardDetails.hotelName || !cardDetails.hotelArrivalTime) return;
+
       const details: HotelCardData = {
         hotelName: cardDetails.hotelName || '',
         hotelAddress: cardDetails.hotelAddress || '',

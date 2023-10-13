@@ -76,6 +76,7 @@ function FlightCard({ name, id, setCards }: CardProps): JSX.Element {
         `/user/getCardDetails/${id}/${name}`
       );
 
+      if (!cardDetails.departureAirport || !cardDetails.flightNumber) return;
       const details: FlightCardData = {
         flightNumber: cardDetails.flightNumber || '',
         flightConfirmationNumber: cardDetails.flightConfirmationNumber || '',
