@@ -57,4 +57,12 @@ router.get(
     return res.status(200).json(res.locals.details);
   }
 );
+
+router.get(
+  '/getCardDetails/:id/:name',
+  userController.getCardDetails,
+  (req, res) => {
+    return res.status(200).json(res.locals.cardDetails);
+  }
+);
 export default router;

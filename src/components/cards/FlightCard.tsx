@@ -9,7 +9,7 @@
  */
 
 import { useDrag } from 'react-dnd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Collapse, Form, Button } from 'antd';
 import axios from 'axios';
 import { convertTo12HourFormat, renderFormItems } from '../../utils/cardUtils';
@@ -69,6 +69,29 @@ function FlightCard({ name, id, setCards }: CardProps): JSX.Element {
     { label: 'Seats', name: 'seat', placeholder: 'e.g: 12B' },
     { label: 'Notes', name: 'flightNotes' },
   ];
+
+  useEffect(() => {
+    const getCardDetails = async () => {
+      const { data: cardDetails } = await axios.get(
+        `/user/getCardDetails/${id}/${name}`
+      );
+
+      const details: FlightCardData = {
+        flightNumber: cardDetails.flightNumber || '',
+        flightConfirmationNumber: cardDetails.flightConfirmationNumber || '',
+        flightNotes: cardDetails.flightNotes || '',
+        seat: cardDetails.seat || '',
+        departureAirport: cardDetails.departureAirport || '',
+        departureTime: cardDetails.departureTime || '',
+        departureGate: cardDetails.departureGate || '',
+        arrivalTime: cardDetails.arrivalTime || '',
+        arrivalGate: cardDetails.arrivalGate || '',
+        arrivalAirport: cardDetails.arrivalAirport || '',
+      };
+      setCardData(details);
+    };
+    getCardDetails();
+  }, [id, name]);
 
   const API_KEY = import.meta.env.VITE_ACCESS_KEY;
 
@@ -133,7 +156,6 @@ function FlightCard({ name, id, setCards }: CardProps): JSX.Element {
         <Collapse
           collapsible='icon'
           className='w-full ml-10 bg-white'
-          defaultActiveKey={['1']}
           items={[
             {
               key: '1',

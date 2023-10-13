@@ -20,11 +20,6 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { renderCards } from '../utils/cardUtils';
 
-/* 
-TODO: [] Populate the itinerary from the database 
-TODO: [] Wherever cards is set, update the itinerary with those cards in the order
-*/
-
 const CardType = {
   Card: 'Card',
 };
@@ -54,7 +49,7 @@ function Itinerary({ cardArray }: ItineraryProps): JSX.Element {
   useEffect(() => {
     const updateCards = async () => {
       try {
-        if (cards.length > 0) {
+        if (cards.length) {
           const allCards: StoredCards[] = [];
           cards.forEach((card) => {
             if (card.props.name) {

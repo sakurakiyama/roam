@@ -10,7 +10,7 @@
 
 import { useDrag } from 'react-dnd';
 import { Collapse, Form, Button, Checkbox, TimePicker } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dayjs } from 'dayjs';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { CardProps, CardType, TimeData } from '../../types';
@@ -78,6 +78,28 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
     { label: 'Notes', name: 'activityNotes' },
   ];
 
+  useEffect(() => {
+    const getCardDetails = async () => {
+      const { data: cardDetails } = await axios.get(
+        `/user/getCardDetails/${id}/${name}`
+      );
+
+      const details: ActivityCardData = {
+        activityName: cardDetails.activityName || '',
+        activityAddress: cardDetails.activityAddress || '',
+        activityPhone: cardDetails.activityPhone || '',
+        activityNotes: cardDetails.activityNotes || '',
+        selectedActivityValue: cardDetails.selectedActivityValue || '',
+      };
+      setCardData(details);
+      setTime({
+        value: null,
+        dateString: cardDetails.activityArrivalTime || '',
+      });
+    };
+    getCardDetails();
+  }, [id, name]);
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: CardType.Card,
     item: { name, id },
@@ -107,6 +129,7 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
       const { data: updatedCard } = await axios.patch('/user/updateCard', {
         id,
         type: name,
+        activityArrivalTime: time.dateString,
         ...activityCardData,
       });
 
@@ -140,7 +163,6 @@ function ActivityCard({ name, id, setCards }: CardProps): JSX.Element {
         <Collapse
           collapsible='icon'
           className='w-full ml-10 bg-white'
-          defaultActiveKey={['1']}
           items={[
             {
               key: '1',

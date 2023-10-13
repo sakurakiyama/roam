@@ -20,6 +20,7 @@ import updateItineraryTitle from './middleware/updateItineraryTitle.js';
 import deleteItinerary from './middleware/deleteItinerary.js';
 import updateItineraryCards from './middleware/updateItineraryCards.js';
 import getItineraryDetails from './middleware/getItineraryDetails.js';
+import getCardDetails from './middleware/getCardDetails.js';
 
 export default {
   getUser,
@@ -32,4 +33,5 @@ export default {
   deleteItinerary,
   updateItineraryCards,
   getItineraryDetails,
+  getCardDetails,
 };

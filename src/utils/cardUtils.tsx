@@ -272,6 +272,15 @@ export const renderCards = (
     }
   });
 
-  const cardsToRender = zipCards(allCards, setCards);
-  setCards(cardsToRender);
+  if (allCards.length === 1) {
+    allCards.unshift(<Placeholder setCards={setCards} id={uuidv4()} />);
+    allCards.push(<Placeholder setCards={setCards} id={uuidv4()} />);
+    setCards(allCards);
+  } else {
+    const cardsToRender = zipCards(allCards, setCards);
+    setCards([
+      ...cardsToRender.flat(),
+      <Placeholder setCards={setCards} id={uuidv4()} />,
+    ]);
+  }
 };

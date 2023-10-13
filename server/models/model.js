@@ -39,6 +39,7 @@ const activityCardSchema = new Schema({
   selectedActivityValue: { type: String, required: false },
   itineraryID: { type: String, required: true },
   type: { type: String, required: true },
+  activityArrivalTime: { type: String, required: false },
 });
 
 const ActivityCards = mongoose.model('ActivityCards', activityCardSchema);
@@ -78,6 +79,7 @@ const hotelCardSchema = new Schema({
   hotelNotes: { type: String, required: false },
   itineraryID: { type: String, required: true },
   type: { type: String, required: true },
+  hotelArrivalTime: { type: String, required: false },
 });
 
 const HotelCards = mongoose.model('HotelCards', hotelCardSchema);
@@ -90,6 +92,7 @@ const restaurantCardSchema = new Schema({
   selectedRestaurantValue: { type: String, required: false },
   itineraryID: { type: String, required: true },
   type: { type: String, required: true },
+  restaurantArrivalTime: { type: String, required: false },
 });
 
 const RestaurantCards = mongoose.model('RestaurantCards', restaurantCardSchema);

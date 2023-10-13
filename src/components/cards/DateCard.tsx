@@ -11,9 +11,9 @@
 import { useDrag } from 'react-dnd';
 
 import { DatePicker, Collapse } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { DatePickerProps } from 'antd';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { formatDate } from '../../utils/cardUtils';
 import { CardType, CardProps } from '../../types';
 import Trash from '../shared/Trash';
@@ -29,6 +29,22 @@ interface DateCardData {
 
 function DateCard({ name, id, setCards }: CardProps): JSX.Element {
   const [cardData, setCardData] = useState<DateCardData | undefined>(undefined);
+
+  ('2023-10-13T15:35:01.816Z');
+  useEffect(() => {
+    const getCardDetails = async () => {
+      const { data: cardDetails } = await axios.get(
+        `/user/getCardDetails/${id}/${name}`
+      );
+      const details: DateCardData = {
+        date: dayjs(cardDetails.date) || null,
+        dateString: cardDetails.dateString || '',
+        formattedDate: cardDetails.formattedDate || '',
+      };
+      setCardData(details);
+    };
+    getCardDetails();
+  }, [id, name]);
 
   const onChange: DatePickerProps['onChange'] = async (date, dateString) => {
     const formattedDate = formatDate(dateString);
@@ -65,7 +81,6 @@ function DateCard({ name, id, setCards }: CardProps): JSX.Element {
         <Collapse
           collapsible='icon'
           className='w-full bg-white'
-          defaultActiveKey={['1']}
           items={[
             {
               key: '1',

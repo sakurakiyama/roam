@@ -10,7 +10,7 @@
 
 import { useDrag } from 'react-dnd';
 import { Collapse, Form, Button, Checkbox, TimePicker } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { Dayjs } from 'dayjs';
 import {
@@ -52,10 +52,30 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
     { label: 'Breakfast', value: 'Breakfast' },
     { label: 'Drinks', value: 'Drinks' },
   ]);
-
   const format = 'hh:mm A';
-
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    const getCardDetails = async () => {
+      const { data: cardDetails } = await axios.get(
+        `/user/getCardDetails/${id}/${name}`
+      );
+
+      const details: RestaurantCardData = {
+        restaurantName: cardDetails.restaurantName || '',
+        restaurantAddress: cardDetails.restaurantAddress || '',
+        restaurantPhone: cardDetails.restaurantPhone || '',
+        restaurantNotes: cardDetails.restaurantNotes || '',
+        selectedRestaurantValue: cardDetails.selectedRestaurantValue || '',
+      };
+      setCardData(details);
+      setTime({
+        value: null,
+        dateString: cardDetails.restaurantArrivalTime || '',
+      });
+    };
+    getCardDetails();
+  }, [id, name]);
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: CardType.Card,
@@ -90,6 +110,7 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
       const { data: updatedCard } = await axios.patch('/user/updateCard', {
         id,
         type: name,
+        restaurantArrivalTime: time.dateString,
         ...restaurantCardData,
       });
       // TODO: [] Update the interface to reflect the returned object and use said object to update state
@@ -144,7 +165,6 @@ function RestaurantCard({ name, id, setCards }: CardProps): JSX.Element {
         <Collapse
           collapsible='icon'
           className='w-full ml-10 bg-white'
-          defaultActiveKey={['1']}
           items={[
             {
               key: '1',

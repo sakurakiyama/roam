@@ -59,6 +59,7 @@ const updateCard = async (req, res, next) => {
           hotelPhone,
           hotelConfirmationNumber,
           hotelNotes,
+          hotelArrivalTime,
         } = req.body;
 
         updatedCard = await HotelCards.findByIdAndUpdate(
@@ -69,6 +70,7 @@ const updateCard = async (req, res, next) => {
             hotelPhone,
             hotelConfirmationNumber,
             hotelNotes,
+            hotelArrivalTime,
           },
           { returnOriginal: false }
         );
@@ -81,6 +83,7 @@ const updateCard = async (req, res, next) => {
           restaurantPhone,
           restaurantNotes,
           selectedRestaurantValue,
+          restaurantArrivalTime,
         } = req.body;
 
         updatedCard = await RestaurantCards.findByIdAndUpdate(
@@ -91,6 +94,7 @@ const updateCard = async (req, res, next) => {
             restaurantPhone,
             restaurantNotes,
             selectedRestaurantValue,
+            restaurantArrivalTime,
           },
           { returnOriginal: false }
         );
@@ -103,6 +107,7 @@ const updateCard = async (req, res, next) => {
           activityPhone,
           activityNotes,
           selectedActivityValue,
+          activityArrivalTime,
         } = req.body;
 
         updatedCard = await ActivityCards.findByIdAndUpdate(
@@ -113,6 +118,7 @@ const updateCard = async (req, res, next) => {
             activityPhone,
             activityNotes,
             selectedActivityValue,
+            activityArrivalTime,
           },
           { returnOriginal: false }
         );

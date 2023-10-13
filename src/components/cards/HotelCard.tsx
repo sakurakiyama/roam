@@ -10,7 +10,7 @@
 
 import { useDrag } from 'react-dnd';
 import { Collapse, Form, Button, TimePicker } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dayjs } from 'dayjs';
 import { renderFormItems, handleTimeChange } from '../../utils/cardUtils';
 import { CardType, TimeData, FormItem, CardProps } from '../../types';
@@ -50,6 +50,28 @@ function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
   const [form] = Form.useForm();
   const format = 'hh:mm A';
 
+  useEffect(() => {
+    const getCardDetails = async () => {
+      const { data: cardDetails } = await axios.get(
+        `/user/getCardDetails/${id}/${name}`
+      );
+
+      const details: HotelCardData = {
+        hotelName: cardDetails.hotelName || '',
+        hotelAddress: cardDetails.hotelAddress || '',
+        hotelPhone: cardDetails.hotelPhone || '',
+        hotelConfirmationNumber: cardDetails.hotelConfirmationNumber || '',
+        hotelNotes: cardDetails.hotelNotes || '',
+      };
+      setCardData(details);
+      setTime({
+        value: null,
+        dateString: cardDetails.hotelArrivalTime || '',
+      });
+    };
+    getCardDetails();
+  }, [id, name]);
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: CardType.Card,
     item: { name, id },
@@ -85,6 +107,7 @@ function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
       const { data: updatedCard } = await axios.patch('/user/updateCard', {
         id,
         type: name,
+        hotelArrivalTime: time.dateString,
         ...hotelCardData,
       });
 
@@ -140,7 +163,6 @@ function HotelCard({ name, id, setCards }: CardProps): JSX.Element {
         <Collapse
           collapsible='icon'
           className='w-full ml-10 bg-white'
-          defaultActiveKey={['1']}
           items={[
             {
               key: '1',
